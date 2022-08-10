@@ -33,7 +33,9 @@ scene.fog = new THREE.Fog(0xffffff, 0.1, 15)
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.6)
 scene.add(ambientLight)
 
-const light = new THREE.HemisphereLight(0x4A96F8, 0x000000, 1);
+const light = new THREE.HemisphereLight(0x478FFF, 0x000000, 1);
+light.position.set(0, 0.4, 0)
+light.intensity = 1
 scene.add(light);
 
 // const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
@@ -100,7 +102,7 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
 }, console.log, console.error)
 
 const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+const material = new THREE.MeshPhongMaterial({ color: 0x000000, fog: true });
 const torus = new THREE.Mesh(geometry, material);
 
 torus.position.set(-6.037, 4.846, -4.747)
@@ -117,34 +119,40 @@ scene.add(torus);
 const mouse = new THREE.Vector2()
 const raycaster = new THREE.Raycaster()
 
+let activeState = 0
+let clicked = false
+let lastCoordinates
+
 window.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / sizes.width) * 2 - 1
     mouse.y = -(event.clientY / sizes.height) * 2 + 1
 })
 
 window.addEventListener('click', (event) => {
-    if (currentIntersect) {
-        console.log(currentIntersect);
-        currentIntersect.object.material.color.set(0xff00ff)
+    clicked = true
 
-        const coordinates = {
-            x: currentIntersect.object.position.x + 5,
+    if (currentIntersect) {
+        torus.material.color.set(0x11944F)
+
+        lastCoordinates = {
+            x: currentIntersect.object.position.x,
             y: currentIntersect.object.position.y,
             z: currentIntersect.object.position.z
         }
 
         gsap.to(camera.position, {
-            x: coordinates.x,
-            y: coordinates.y,
-            z: coordinates.z,
+            x: lastCoordinates.x + 3,
+            y: lastCoordinates.y + 1,
+            z: lastCoordinates.z,
             duration: 1,
             ease: 'power3.inOut',
             onUpdate: () => {
                 camera.position.set(camera.position.x, camera.position.y, camera.position.z)
             }
+        }).then(() => {
+            activeState = 1
+            clicked = false
         })
-
-        // camera.position.set(currentIntersect.object.position.x + 10, currentIntersect.object.position.y, currentIntersect.object.position.z + 10)
     }
 })
 
@@ -183,10 +191,10 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor(0xffffff, 1)
 
-
+// First person controls
 const controls = new FirstPersonControls(camera, renderer.domElement)
 controls.maxDistance = 20
-controls.lookSpeed = 0.1
+controls.lookSpeed = 0.05
 
 /**
  * Animate
@@ -209,17 +217,47 @@ const tick = () => {
     const object = torus
     const intersect = raycaster.intersectObject(object)
 
+    switch (activeState) {
+        case 1:
+            console.log(activeState, 'cameraStatus');
+
+            torus.material.color.set(0x11944F)
+
+            const coordinates = {
+                x: Math.cos(elapsedTime) * 3 + lastCoordinates.x,
+                z: Math.sin(elapsedTime) * 3 + lastCoordinates.z
+            }
+
+            // gsap.to(camera.position, {
+            //     x: elapsedTime,
+            //     y: lastCoordinates.y,
+            //     z: elapsedTime,
+            //     duration: 1,
+            //     ease: 'power3.inOut',
+            //     onUpdate: () => {
+            //         camera.position.set(camera.position.x, camera.position.y, camera.position.z)
+            //     }
+            // })
+
+            camera.position.x = coordinates.x
+            camera.position.z = coordinates.z
+
+            controls.lookSpeed = 0
+            controls.lookAt(torus.position)
+            break
+    }
+
     if (intersect.length) {
-        if (currentIntersect) {
+        if (currentIntersect && activeState === 0) {
             console.log(currentIntersect);
-            currentIntersect.object.material.color.set(0xff00ff)
+            currentIntersect.object.material.color.set(0x11944F)
             document.body.style.cursor = 'pointer'
         }
 
         currentIntersect = intersect[0]
     } else {
         if (!currentIntersect) {
-            object.material.color.set(0x000000)
+            if (activeState === 0 && !clicked) object.material.color.set(0x000000)
             document.body.style.cursor = 'default'
         }
 
