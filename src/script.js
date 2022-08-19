@@ -338,8 +338,8 @@ const tick = async () => {
                 const popupContainer = document.createElement('div')
                 const articleContainer = document.createElement('article')
 
-                const popup = await fetch('articles/MontBlanc/popup.html').then(res => res.text())
-                const article = await fetch('articles/MontBlanc/article.html').then(res => res.text())
+                const popup = await fetch('articles/MontBlanc/popup.html').then(res => res.clone().text())
+                const article = await fetch('articles/MontBlanc/article.html').then(res => res.clone().text())
 
                 popupContainer.id = 'popup'
                 popupContainer.innerHTML = popup
