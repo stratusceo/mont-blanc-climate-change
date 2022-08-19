@@ -1,3 +1,43 @@
+@font-face {
+  font-family: "Light";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Light.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Regular";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Regular.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Regular Italic";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-RegularItalic.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Bold";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Bold.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Black";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Black.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,11 +45,20 @@
 
 html,
 body {
-  overflow: hidden;
+  font-family: "Medium";
+  overflow-x: hidden;
+}
+
+canvas {
+  cursor: grab;
+}
+
+canvas:active {
+  cursor: grabbing;
 }
 
 .webgl {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   outline: none;
@@ -19,11 +68,12 @@ div#load {
   position: absolute;
 
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-direction: column;
 
   background: white;
+  text-align: center;
   cursor: default;
   z-index: 999;
   left: 0;
@@ -33,39 +83,69 @@ div#load {
   height: 100vh;
 }
 
+div#load div.progress-bar {
+  position: absolute;
+
+  background: black;
+  left: 0;
+  top: 0;
+
+  width: 0;
+  height: 3px;
+}
+
+div#load > div {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
+}
+
 div#load h1 {
+  font-family: "Black";
   font-weight: bold;
   margin: 0 0 20px 0;
 }
 
-div#text {
+div#load h2 {
+  font-family: "Light";
+}
+
+div#popup {
   position: absolute;
 
   transform: translate(0, -50%);
-  font-family: monospace;
+  font-family: "Regular";
+  scrollbar-width: none;
   background: white;
   border-radius: 25px;
   overflow-y: scroll;
   line-height: 1.2;
   font-size: 12px;
   color: black;
-  left: 100px;
+  z-index: 999;
+  left: 150px;
   top: 50%;
 
-  width: 450px;
-  height: 615px;
+  width: 550px;
+  height: 675px;
 }
 
-div#text > div#thumbnail {
+div#popup::-webkit-scrollbar {
+  width: 0;
+}
+
+div#popup > div#thumbnail {
   position: relative;
   overflow: hidden;
 }
 
-div#text > div#thumbnail img {
+div#popup > div#thumbnail img {
   width: 100%;
 }
 
-div#text > div#thumbnail div#shadow-image {
+div#popup > div#thumbnail div#shadow-image {
   position: absolute;
 
   background: linear-gradient(
@@ -79,7 +159,7 @@ div#text > div#thumbnail div#shadow-image {
   height: 100%;
 }
 
-div#text > div#thumbnail div#text-content {
+div#popup > div#thumbnail div#text-content {
   position: absolute;
 
   color: white;
@@ -88,15 +168,17 @@ div#text > div#thumbnail div#text-content {
   margin: 20px;
 }
 
-div#text > div#thumbnail div#text-content h1 {
+div#popup > div#thumbnail div#text-content h1 {
+  font-family: "Bold";
   font-weight: bold;
 }
 
-div#text > div#thumbnail div#text-content h2 {
+div#popup > div#thumbnail div#text-content h2 {
+  font-family: "Medium";
   font-weight: normal;
 }
 
-div#text > div#thumbnail button#close-button {
+div#popup > div#thumbnail button#close-button {
   position: absolute;
 
   display: grid;
@@ -112,24 +194,333 @@ div#text > div#thumbnail button#close-button {
   height: 48px;
 }
 
-div#text > div#thumbnail button#close-button img {
+div#popup > div#thumbnail button#close-button img {
   width: 32px;
   height: 32px;
 }
 
-div#text h3 {
+div#popup h3 {
+  font-size: 20px;
   margin: 20px 20px 0 20px;
 }
 
-div#text p {
+div#popup p {
+  font-family: "Light";
+  font-size: 16px;
   margin: 20px;
 }
 
-div#text q {
+div#popup q {
   display: block;
 
+  font-family: "Regular Italic";
   text-align: center;
-  font-size: 14px;
+  font-size: 19px;
 
   margin: 30px;
+}
+
+.point {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+}
+
+.point .label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: 0.3s;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #00000077;
+  border: 1px solid #ffffff77;
+  color: white;
+  font-family: "Regular";
+  text-align: center;
+  line-height: 40px;
+  font-weight: 100;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.point:hover .label {
+  transition: 0.3s;
+  border-color: #91f086;
+  background: #48bf53;
+}
+
+.point .text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: whitesmoke;
+  color: black;
+  font-family: "Medium";
+  font-weight: 100;
+  font-size: 14px;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.point:hover .text {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+div#text-point {
+  position: absolute;
+
+  background: rgba(255, 255, 255, 0.35);
+  z-index: 1;
+  left: 0;
+  top: 0;
+
+  width: 100vw;
+  height: 100vh;
+}
+
+div#text-point p {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Bold";
+  color: black;
+  font-size: 48px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+article {
+  position: relative;
+
+  width: 100vw;
+  min-height: 120vh;
+}
+
+article img {
+  object-fit: cover;
+
+  width: 100vw;
+  height: 200px;
+}
+
+.snow {
+  z-index: 2;
+}
+
+.snow,
+.snow:before {
+  position: absolute;
+  transform: translateX(-50%);
+  top: -600px;
+  left: 50%;
+  bottom: 0;
+  right: 0;
+  background-image: radial-gradient(
+      6px 6px at 477px 422px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 128px 485px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 255px 584px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 85px 134px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      6px 6px at 97px 503px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(6px 6px at 291px 317px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(5px 5px at 304px 403px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(3px 3px at 362px 561px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      6px 6px at 570px 510px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 464px 447px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 321px 109px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 461px 482px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 60px 232px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 262px 451px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(5px 5px at 298px 93px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      5px 5px at 274px 61px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      6px 6px at 164px 102px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(5px 5px at 66px 384px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      4px 4px at 431px 36px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(4px 4px at 76px 120px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      4px 4px at 205px 296px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 347px 52px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(5px 5px at 132px 190px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      3px 3px at 149px 199px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 351px 565px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 190px 578px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 312px 121px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      6px 6px at 516px 576px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(5px 5px at 472px 171px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(5px 5px at 412px 533px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(3px 3px at 148px 137px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(3px 3px at 24px 308px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      5px 5px at 164px 79px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 127px 499px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 215px 560px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 287px 238px,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 23px 106px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      3px 3px at 42px 350px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 204px 517px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      5px 5px at 280px 509px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(3px 3px at 82px 121px, white 50%, rgba(0, 0, 0, 0)),
+    radial-gradient(
+      6px 6px at 489px 313px,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 278px 495px,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      4px 4px at 304px 9px,
+      rgba(255, 255, 255, 0.8) 50%,
+      rgba(0, 0, 0, 0)
+    );
+  background-size: 600px 600px;
+  animation: snow 5s linear infinite;
+  content: "";
+
+  width: 40vw;
+}
+.snow:after {
+  margin-left: -200px;
+  opacity: 0.4;
+  animation-duration: 9s;
+  animation-direction: reverse;
+  filter: blur(1.5px);
+}
+.snow:before {
+  animation-duration: 9s;
+  animation-direction: reverse;
+  margin-left: -300px;
+  opacity: 0.65;
+  filter: blur(1.5px);
+}
+@keyframes snow {
+  to {
+    transform: translateY(100px);
+  }
 }

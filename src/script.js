@@ -1,6 +1,6 @@
 import './style.css'
 import * as THREE from 'three'
-import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 // import * as dat from 'lil-gui'
 import gsap from 'gsap'
@@ -11,11 +11,81 @@ const stats = new Stats()
 stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom)
 
+
+let actived = false
+
+/**
+ * HTML Animations
+ */
+const handleShowAnimation = (title, element) => {
+    if (!document.getElementById('text-point')) {
+        const container = document.createElement('div')
+
+        element.onmouseover = () => {
+            if (!actived) {
+                const text = document.createElement('p')
+
+                text.innerHTML = title
+
+                container.id = 'text-point'
+
+                const snow = document.createElement('div')
+
+                snow.classList.add('snow')
+
+                container.append(text, snow)
+
+                document.body.appendChild(container)
+
+                gsap.fromTo(snow, {
+                    opacity: 0
+                }, {
+                    opacity: 1,
+                    duration: 1,
+                    ease: 'power2.inOut'
+                })
+
+                gsap.fromTo(container, {
+                    opacity: 0,
+                }, {
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: 'power2.inOut'
+                })
+            }
+        }
+
+        element.onmouseleave = () => {
+            if (!actived) gsap.to(container, {
+                opacity: 0,
+                curosr: 'grab',
+                duration: 0.5,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    container.remove()
+                }
+            })
+        }
+    }
+}
+
+document.querySelectorAll('.point').forEach(element => {
+    if (element.classList.contains('point-0')) handleShowAnimation('Mont-Blanc', element)
+})
+
 /**
  * Base
  */
 // Debug
 // const gui = new dat.GUI()
+
+const points = [
+    {
+        position: new THREE.Vector3(-5.2, 4.85, -5.3),
+        element: document.querySelector('.point-0'),
+        index: 0
+    }
+]
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -23,7 +93,7 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-scene.fog = new THREE.Fog(0xffffff, 0.1, 15)
+scene.fog = new THREE.Fog(0xffffff, 0.1, 75)
 
 /**
  * Lights
@@ -31,7 +101,7 @@ scene.fog = new THREE.Fog(0xffffff, 0.1, 15)
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.6)
 scene.add(ambientLight)
 
-const light = new THREE.HemisphereLight(0x478FFF, 0x191A19, 1);
+const light = new THREE.HemisphereLight(0x77BAF5, 0x77BAF5, 1);
 light.position.set(0, 0.4, 0)
 light.intensity = 1
 scene.add(light);
@@ -73,6 +143,7 @@ window.addEventListener('resize', () => {
  * Models
  */
 const gltfLoader = new GLTFLoader()
+let model
 
 // const textureLoader = new THREE.TextureLoader()
 // const texture = textureLoader.load('models/MontBlanc/textures/MontBlanc_VandeHei_1M_u0_v0.001_baseColor.jpeg')
@@ -89,7 +160,7 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
     const childrens = [...gltf.scene.children]
 
     for (const children of childrens) {
-        const model = children
+        model = children
 
         model.castShadow = true
         model.receiveShadow = true
@@ -99,40 +170,59 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
     }
 
     if (document.getElementById('load')) {
+        controls.target.copy(model.position)
+
         // show website
-        gsap.to('#load h1', {
-            x: -250,
+        gsap.to('#load div.progress-bar', {
             opacity: 0,
             duration: 1,
-            ease: 'back.in(1.4)'
-        })
-
-        gsap.to('#load h2', {
-            x: 250,
-            opacity: 0,
-            duration: 1,
-            ease: 'back.in(1.4)'
-        })
-
-        gsap.to('#load', {
-            opacity: 0,
-            duration: 2.5,
             onComplete: () => {
-                document.querySelector('#load').remove()
+                gsap.to('#load h1', {
+                    opacity: 0,
+                    duration: 1,
+                })
+
+                gsap.to('#load h2', {
+                    opacity: 0,
+                    duration: 1,
+                    onComplete: () => {
+                        gsap.fromTo(model.position, {
+                            x: model.position.x,
+                            y: 25,
+                            z: model.position.z
+                        }, {
+                            x: 0,
+                            y: 0,
+                            z: 0,
+                            duration: 1,
+                            ease: 'back.inOut(2.4)',
+                            onUpdate: () => {
+                                model.position.y = model.position.y
+                            }
+                        })
+
+                        gsap.to('#load', {
+                            opacity: 0,
+                            duration: 2,
+                            onComplete: () => {
+                                document.querySelector('#load').remove()
+                            }
+                        })
+                    }
+                })
             }
         })
     }
-}, console.log, console.error)
+}, e => {
+    console.log(e)
 
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-const material = new THREE.MeshPhongMaterial({ color: 0x191A19, fog: true });
-const torus = new THREE.Mesh(geometry, material);
+    const percent = Math.round((e.loaded / e.total) * 100)
 
-torus.position.set(-6.037, 4.846, -4.747)
-torus.scale.set(0.198, 0.198, 0.198)
-torus.material.color.set(0x191A19)
-
-scene.add(torus);
+    gsap.to('#load div.progress-bar', {
+        width: percent === Infinity ? '200vw' : `${percent * 2}vw`,
+        duration: 0.25
+    })
+}, console.error)
 
 /**
  * Mouse
@@ -141,43 +231,10 @@ const mouse = new THREE.Vector2()
 const raycaster = new THREE.Raycaster()
 
 let activeState = 0
-let clicked = false
-let lastCoordinates
 
 window.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / sizes.width) * 2 - 1
     mouse.y = -(event.clientY / sizes.height) * 2 + 1
-})
-
-window.addEventListener('click', () => {
-    clicked = true
-
-    if (currentIntersect) {
-        controls.lookSpeed = 0
-        torus.material.color.set(0x11944F)
-
-        lastCoordinates = {
-            x: currentIntersect.object.position.x,
-            y: currentIntersect.object.position.y,
-            z: currentIntersect.object.position.z
-        }
-
-        gsap.to(camera.position, {
-            x: lastCoordinates.x + 3,
-            y: lastCoordinates.y + 1,
-            z: lastCoordinates.z,
-            duration: 2,
-            ease: 'back.in(1.4)',
-            onUpdate: () => {
-                camera.position.set(camera.position.x, camera.position.y, camera.position.z)
-                controls.lookAt(torus.position)
-            }
-        }).then(() => {
-            controls.lookSpeed = 0.05
-            activeState = 1
-            clicked = false
-        })
-    }
 })
 
 /**
@@ -185,52 +242,65 @@ window.addEventListener('click', () => {
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 1e3)
-
 scene.add(camera)
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
-})
+const renderer = new THREE.WebGLRenderer({ canvas: canvas })
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor(0xffffff, 1)
 
-// First person controls
-const controls = new FirstPersonControls(camera, renderer.domElement)
-controls.maxDistance = 20
-controls.lookSpeed = 0
-
-camera.position.set(0, 3, -15)
+// Orbit controls
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+controls.enableZoom = false
+controls.minPolarAngle = Math.PI / 2.25
+controls.maxPolarAngle = Math.PI / 2.25
+controls.minDistance = 50
+controls.maxDistance = 50
+controls.autoRotate = true
+controls.autoRotateSpeed = 1
 
 const handleShowMenu = element => {
-    controls.lookSpeed = 0
     activeState = 0
 
     if (element) gsap.to(element, {
         y: -50,
         opacity: 0,
         duration: 0.5,
+        ease: 'back.in(1.4)',
         onComplete: () => {
             element.remove()
+            actived = false
         }
     })
 
     gsap.to(camera.position, {
-        x: 0,
-        y: 3,
-        z: -15,
+        x: 50,
+        y: 2,
+        z: -50,
         duration: 1,
-        ease: 'power3.inOut',
+        ease: 'back.in(1.4)',
         onUpdate: () => {
             camera.position.set(camera.position.x, camera.position.y, camera.position.z)
+        }
+    })
 
-            controls.lookAt(torus.position)
-            controls.lookSpeed = 0.05
+    gsap.to(camera, {
+        fov: 50,
+        duration: 1,
+        ease: 'back.in(1.4)',
+        onUpdate: () => {
+            camera.fov = camera.fov
+            controls.target.copy(points[0].position)
+            camera.updateProjectionMatrix()
+        },
+        onComplete: () => {
+            if (model) controls.target.copy(model.position)
         }
     })
 }
@@ -242,9 +312,8 @@ handleShowMenu()
  */
 const clock = new THREE.Clock()
 let previousTime = 0
-let currentIntersect
 
-const tick = () => {
+const tick = async () => {
     stats.begin()
 
     const elapsedTime = clock.getElapsedTime()
@@ -252,86 +321,39 @@ const tick = () => {
 
     previousTime = elapsedTime
 
+    controls.update()
+
     // Raycaster
     raycaster.setFromCamera(mouse, camera)
 
-    const object = torus
-    const intersect = raycaster.intersectObject(object)
+    // const object = torus
+    // const intersect = raycaster.intersectObject(object)
 
     switch (activeState) {
         case 1:
-            torus.material.color.set(0x11944F)
+            controls.target.copy(points[0].position)
 
-            const coordinates = {
-                x: Math.cos(elapsedTime) * 3 + lastCoordinates.x,
-                z: Math.sin(elapsedTime) * 3 + lastCoordinates.z
-            }
-
-            camera.position.x = coordinates.x
-            camera.position.z = coordinates.z
-
-            controls.lookSpeed = 0
-            controls.lookAt(torus.position)
-
-            if (!document.getElementById('text')) {
+            if (!document.getElementById('popup')) {
                 // add text
-                const text = document.createElement('div')
+                const popupContainer = document.createElement('div')
+                const articleContainer = document.createElement('article')
 
-                text.id = 'text'
-                text.innerHTML = `
-                    <div id="thumbnail">
-                        <img src="assets/pages/1/mont-blanc.webp" alt="Mont-Blanc's mountain" />
-                        <div id="shadow-image"></div>
+                const popup = await fetch('articles/MontBlanc/popup.html').then(res => res.text())
+                const article = await fetch('articles/MontBlanc/article.html').then(res => res.text())
 
-                        <div id="text-content">
-                            <h1>Mont-Blanc</h1>
-                            <h2>The highest mountain of Europe 🇪🇺</h2>
-                        </div>
-                    </div>
+                popupContainer.id = 'popup'
+                popupContainer.innerHTML = popup
 
-                    <h3>Latest news — Closed to visitors in cause of climate change</h3>
-
-                    <q cite="https://www.futura-sciences.com/planete/actualites/montagne-mont-blanc-effrite-devient-trop-dangereux-100166/">Le Mont-Blanc s'effrite et devient trop dangereux</q>
-
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                     in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                     non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-                     <h3>What to do</h3>
-
-                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                     in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                     non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-                     <h3>Any questions?</h3>
-
-                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                     in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                     non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                `
-
-                text.addEventListener('scroll', event => {
-                    // create parallax effect with image from div#thumbnail
+                popupContainer.addEventListener('scroll', event => {
                     const image = document.querySelector('#thumbnail img')
                     const scrollY = event.target.scrollTop
 
-                    console.log(scrollY);
-
-                    // image.style.transform = `translateY(${scrollY / 2}px)`
-
-                    gsap.to(image, {
-                        transform: `translateY(${scrollY / 2}px)`,
-                        duration: 0.3
-                    })
+                    image.style.transform = `translateY(${scrollY / 2}px)`
                 })
 
-                document.body.appendChild(text)
+                articleContainer.innerHTML = article
+
+                document.body.append(popupContainer, articleContainer)
 
                 // add close button
                 const button = document.createElement('button')
@@ -342,12 +364,15 @@ const tick = () => {
                     e.preventDefault()
                     e.stopPropagation()
 
-                    handleShowMenu(text)
+                    handleShowMenu(popupContainer)
                 }
 
-                text.querySelector('#thumbnail').appendChild(button)
+                popupContainer.querySelector('#thumbnail').appendChild(button)
 
-                gsap.fromTo(text, {
+                // add view more button
+                // ...
+
+                gsap.fromTo(popupContainer, {
                     y: -50,
                     opacity: 0,
                 }, {
@@ -360,20 +385,58 @@ const tick = () => {
             break
     }
 
-    if (intersect.length) {
-        if (currentIntersect && activeState === 0 && document.body.style.cursor !== 'pointer') {
-            currentIntersect.object.material.color.set(0x11944F)
-            document.body.style.cursor = 'pointer'
-        }
+    /**
+     * Points
+     */
+    for (const point of points) {
+        const screenPosition = point.position.clone()
+        screenPosition.project(camera)
 
-        currentIntersect = intersect[0]
-    } else {
-        if (!currentIntersect) {
-            if (activeState === 0 && !clicked) object.material.color.set(0x191A19)
-            if (document.body.style.cursor !== 'default') document.body.style.cursor = 'default'
-        }
+        const translateX = screenPosition.x * sizes.width * 0.5
+        const translateY = screenPosition.y * sizes.height * 0.5
 
-        currentIntersect = null
+        point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
+        point.element.onclick = () => {
+            console.log(point.index, 'point.index');
+
+            actived = true
+
+            const textPoint = document.getElementById('text-point')
+
+            // remove text
+            gsap.to(textPoint, {
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power2.inOut',
+                onComplete: () => {
+                    textPoint.remove()
+
+                    // transition to description
+                    switch (point.index) {
+                        case 0:
+                            controls.target.copy(points[0].position)
+
+                            gsap.to(camera, {
+                                fov: 25,
+                                duration: 2,
+                                ease: 'back.in(1.4)',
+                                onUpdate: () => {
+                                    controls.target.copy(points[0].position)
+
+                                    camera.fov = camera.fov
+                                    camera.updateProjectionMatrix()
+                                }
+                            }).then(() => {
+                                activeState = 1
+                            })
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            })
+        }
     }
 
     // Update controls
