@@ -151,11 +151,11 @@ let model
 // texture.minFilter = THREE.LinearFilter
 
 gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gltf) => {
-    gltf.scene.traverse(child => {
-        if (child.isMesh) {
-            // child.material.wireframe = true
-        }
-    })
+    // gltf.scene.traverse(child => {
+    //     if (child.isMesh) {
+    //         child.material.wireframe = true
+    //     }
+    // })
 
     const childrens = [...gltf.scene.children]
 
@@ -227,15 +227,15 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
 /**
  * Mouse
  */
-const mouse = new THREE.Vector2()
-const raycaster = new THREE.Raycaster()
+// const mouse = new THREE.Vector2()
+// const raycaster = new THREE.Raycaster()
 
 let activeState = 0
 
-window.addEventListener('mousemove', (event) => {
-    mouse.x = (event.clientX / sizes.width) * 2 - 1
-    mouse.y = -(event.clientY / sizes.height) * 2 + 1
-})
+// window.addEventListener('mousemove', (event) => {
+//     mouse.x = (event.clientX / sizes.width) * 2 - 1
+//     mouse.y = -(event.clientY / sizes.height) * 2 + 1
+// })
 
 /**
  * Camera
@@ -324,7 +324,7 @@ const tick = async () => {
     controls.update()
 
     // Raycaster
-    raycaster.setFromCamera(mouse, camera)
+    // raycaster.setFromCamera(mouse, camera)
 
     // const object = torus
     // const intersect = raycaster.intersectObject(object)
