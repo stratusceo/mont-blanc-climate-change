@@ -94,7 +94,7 @@ div#load div.progress-bar {
   height: 3px;
 }
 
-div#load > div {
+/* div#load > div {
   position: absolute;
 
   transform: translate(-50%, -50%);
@@ -105,10 +105,62 @@ div#load > div {
 div#load h1 {
   font-family: "Black";
   font-weight: bold;
+  font-size: 400px;
+  line-height: 300px;
+
   margin: 0 0 20px 0;
+  width: 100%;
 }
 
 div#load h2 {
+  font-family: "Light";
+  font-size: 400px;
+  line-height: 300px;
+
+  width: 100%;
+} */
+
+.wrapper {
+  position: absolute;
+  width: 300%;
+  height: 50vh;
+  left: 50%;
+  top: 120px;
+  overflow: hidden;
+}
+.wrapper .box {
+  position: absolute;
+  width: auto;
+  height: auto;
+  background: white;
+  white-space: nowrap;
+  color: black;
+  font-size: 400px;
+  font-weight: 600;
+  line-height: 300px;
+  text-align: center;
+}
+.wrapper .boxes {
+  position: absolute;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  left: -250px;
+  height: 50vh;
+}
+
+#no01 {
+  top: 0 !important;
+  font-family: "Black";
+}
+
+#no02 {
+  bottom: 0 !important;
+  top: auto;
   font-family: "Light";
 }
 

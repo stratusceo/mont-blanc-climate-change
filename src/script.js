@@ -14,6 +14,73 @@ document.body.appendChild(stats.dom)
 
 let actived = false
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+console.clear();
+
+gsap.set('.wrapper', { x: '-50%' })
+
+const boxWidth = 2000,
+    totalWidth = boxWidth * 2,  //  * n of boxes
+    no01 = document.querySelectorAll("#no01 .box"),
+    no02 = document.querySelectorAll("#no02 .box"),
+    dirFromLeft = "+=" + totalWidth,
+    dirFromRight = "-=" + totalWidth;
+
+const mod = gsap.utils.wrap(0, totalWidth);
+
+function marquee(which, time, direction) {
+    gsap.set(which, {
+        x: function (i) {
+            return i * boxWidth;
+        }
+    });
+
+    const action = gsap.timeline()
+        .to(which, {
+            x: direction,
+            modifiers: {
+                x: x => mod(parseFloat(x)) + "px"
+            },
+            duration: time,
+            ease: 'none',
+            repeat: -1
+        });
+
+    return action
+}
+
+const master = gsap.timeline({ play: true })
+    .add(marquee(no01, 15, dirFromLeft))
+    .add(marquee(no02, 15, dirFromRight), 0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * HTML Animations
  */
@@ -393,7 +460,7 @@ const tick = async () => {
         screenPosition.project(camera)
 
         const translateX = screenPosition.x * sizes.width * 0.5
-        const translateY = screenPosition.y * sizes.height * 0.5
+        const translateY = -screenPosition.y * sizes.height * 0.5
 
         point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
         point.element.onclick = () => {
