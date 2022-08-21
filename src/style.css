@@ -31,6 +31,14 @@
 }
 
 @font-face {
+  font-family: "ExtraBold";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-ExtraBold.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Black";
   src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Black.otf")
     format("opentype");
@@ -45,6 +53,11 @@
 
 html,
 body {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+
   font-family: "Medium";
   overflow-x: hidden;
 }
@@ -62,6 +75,63 @@ canvas:active {
   top: 0;
   left: 0;
   outline: none;
+}
+
+nav {
+  position: absolute;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+
+  background: white;
+  z-index: 3;
+  left: 0;
+  top: 0;
+
+  width: 100vw;
+}
+
+nav ul {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+
+  margin: 0 0 0 200px;
+}
+
+nav li {
+  text-align: center;
+  overflow: hidden;
+  line-height: 1;
+  margin: 0;
+}
+
+nav li button {
+  display: block;
+  transform: translateY(100%);
+  text-transform: uppercase;
+  font-family: "Light";
+  font-size: 130px;
+  background: none;
+  cursor: pointer;
+  color: black;
+  border: none;
+}
+
+nav li button:after {
+  display: block;
+  transition: transform 250ms ease-in-out;
+  border-bottom: solid 5px black;
+  transform-origin: 0% 50%;
+  transform: scaleX(0);
+  content: "";
+}
+
+nav li button:hover:after {
+  transform: scaleX(1);
 }
 
 div#load {
@@ -122,11 +192,12 @@ div#load h2 {
 
 .wrapper {
   position: absolute;
-  width: 300%;
-  height: 50vh;
+  transform: translateX(-50%);
   left: 50%;
   top: 120px;
   overflow: hidden;
+  width: 300%;
+  height: 50vh;
 }
 .wrapper .box {
   position: absolute;
@@ -164,7 +235,7 @@ div#load h2 {
   font-family: "Light";
 }
 
-div#popup {
+/* div#popup {
   position: absolute;
 
   transform: translate(0, -50%);
@@ -186,18 +257,18 @@ div#popup {
 
 div#popup::-webkit-scrollbar {
   width: 0;
-}
+} */
 
-div#popup > div#thumbnail {
+div#thumbnail {
   position: relative;
   overflow: hidden;
 }
 
-div#popup > div#thumbnail img {
+div#thumbnail img {
   width: 100%;
 }
 
-div#popup > div#thumbnail div#shadow-image {
+div#thumbnail div#shadow-image {
   position: absolute;
 
   background: linear-gradient(
@@ -205,13 +276,13 @@ div#popup > div#thumbnail div#shadow-image {
     rgba(255, 255, 255, 0) 0%,
     rgba(0, 0, 0, 0.2) 100%
   );
-  top: -3px;
+  top: -1px;
 
   width: 100%;
   height: 100%;
 }
 
-div#popup > div#thumbnail div#text-content {
+div#thumbnail div#text-content {
   position: absolute;
 
   color: white;
@@ -220,38 +291,17 @@ div#popup > div#thumbnail div#text-content {
   margin: 20px;
 }
 
-div#popup > div#thumbnail div#text-content h1 {
+div#thumbnail div#text-content h1 {
   font-family: "Bold";
   font-weight: bold;
 }
 
-div#popup > div#thumbnail div#text-content h2 {
+div#thumbnail div#text-content h2 {
   font-family: "Medium";
   font-weight: normal;
 }
 
-div#popup > div#thumbnail button#close-button {
-  position: absolute;
-
-  display: grid;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 100%;
-  place-items: center;
-  cursor: pointer;
-  border: none;
-  right: 15px;
-  top: 15px;
-
-  width: 48px;
-  height: 48px;
-}
-
-div#popup > div#thumbnail button#close-button img {
-  width: 32px;
-  height: 32px;
-}
-
-div#popup h3 {
+/* div#popup h3 {
   font-size: 20px;
   margin: 20px 20px 0 20px;
 }
@@ -260,17 +310,7 @@ div#popup p {
   font-family: "Light";
   font-size: 16px;
   margin: 20px;
-}
-
-div#popup q {
-  display: block;
-
-  font-family: "Regular Italic";
-  text-align: center;
-  font-size: 19px;
-
-  margin: 30px;
-}
+} */
 
 .point {
   position: absolute;
@@ -353,18 +393,124 @@ div#text-point p {
   line-height: 1.2;
 }
 
+button#navbar-button {
+  display: grid;
+  place-items: center;
+
+  position: absolute;
+  background: none;
+  cursor: pointer;
+  border: none;
+  z-index: 4;
+  left: 50px;
+  top: 50px;
+}
+
+button#close-button {
+  position: absolute;
+
+  display: grid;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 100%;
+  place-items: center;
+  cursor: pointer;
+  border: none;
+  right: 50px;
+  top: 50px;
+}
+
+button#close-button p {
+  transform: translate(-50px, 0px) rotateZ(-10deg);
+  text-shadow: 0 0 10px black;
+  font-family: "Regular";
+  font-size: 16px;
+  color: white;
+}
+
+button#close-button img {
+  filter: drop-shadow(0px 0px 10px black);
+
+  width: 52px;
+  height: 52px;
+}
+
+button#more-button {
+  position: absolute;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+
+  background: none;
+  cursor: pointer;
+  border: none;
+  bottom: 50px;
+  right: 50px;
+}
+
+button#more-button p {
+  transform: translate(-50px, 5px) rotateZ(-10deg);
+  text-shadow: 0 0 10px black;
+  font-family: "Regular";
+  font-size: 16px;
+  color: white;
+}
+
+button#more-button img {
+  filter: drop-shadow(0 0 10px black);
+
+  width: 64px;
+  height: 64px;
+}
+
 article {
   position: relative;
 
-  width: 100vw;
+  padding: 70px 0 0 0;
+  width: 90vw;
   min-height: 120vh;
+}
+
+article div#thumbnail {
+  height: 400px;
 }
 
 article img {
   object-fit: cover;
+  width: 100%;
+}
 
-  width: 100vw;
-  height: 200px;
+article h1 {
+  font-family: "Black";
+  font-size: 38px;
+}
+
+article h2 {
+  font-family: "Bold";
+  font-size: 25px;
+}
+
+article h3 {
+  font-family: "ExtraBold";
+  font-size: 22px;
+  margin: 20px 0 10px 0;
+}
+
+article q {
+  display: block;
+
+  font-family: "Regular Italic";
+  text-align: center;
+  font-size: 23px;
+
+  margin: 30px;
+}
+
+article p {
+  letter-spacing: 0.5px;
+  font-family: "Light";
+  font-size: 17px;
 }
 
 .snow {
@@ -411,149 +557,11 @@ article img {
       6px 6px at 570px 510px,
       rgba(255, 255, 255, 0.8) 50%,
       rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 464px 447px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 321px 109px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 461px 482px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 60px 232px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 262px 451px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(5px 5px at 298px 93px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      5px 5px at 274px 61px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      6px 6px at 164px 102px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(5px 5px at 66px 384px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      4px 4px at 431px 36px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(4px 4px at 76px 120px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      4px 4px at 205px 296px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 347px 52px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(5px 5px at 132px 190px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      3px 3px at 149px 199px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 351px 565px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 190px 578px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 312px 121px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      6px 6px at 516px 576px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(5px 5px at 472px 171px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(5px 5px at 412px 533px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(3px 3px at 148px 137px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(3px 3px at 24px 308px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      5px 5px at 164px 79px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 127px 499px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 215px 560px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 287px 238px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 23px 106px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 42px 350px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 204px 517px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 280px 509px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(3px 3px at 82px 121px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      6px 6px at 489px 313px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 278px 495px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      4px 4px at 304px 9px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
     );
   background-size: 600px 600px;
   animation: snow 5s linear infinite;
   content: "";
+  overflow: hidden;
 
   width: 40vw;
 }
