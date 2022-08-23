@@ -39,6 +39,14 @@
 }
 
 @font-face {
+  font-family: "ExtraBold Italic";
+  src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-ExtraBoldItalic.otf")
+    format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Black";
   src: url("../static/fonts/Denton\ XCondensed\ Test/DentonXCondensedTest-Black.otf")
     format("opentype");
@@ -49,6 +57,8 @@
 * {
   margin: 0;
   padding: 0;
+
+  /* color: #56affc; */
 }
 
 html,
@@ -383,14 +393,15 @@ div#text-point {
 
 div#text-point p {
   position: absolute;
-  top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
-  font-family: "Bold";
-  color: black;
-  font-size: 48px;
+  font-family: "ExtraBold Italic";
   text-align: center;
   line-height: 1.2;
+  font-size: 298px;
+  color: black;
+  width: 100%;
+  left: 50%;
+  top: 50%;
 }
 
 button#navbar-button {
@@ -409,10 +420,12 @@ button#navbar-button {
 button#close-button {
   position: absolute;
 
-  display: grid;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 100%;
-  place-items: center;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+
+  background: none;
   cursor: pointer;
   border: none;
   right: 50px;
@@ -493,7 +506,7 @@ article h2 {
 
 article h3 {
   font-family: "ExtraBold";
-  font-size: 22px;
+  font-size: 52px;
   margin: 20px 0 10px 0;
 }
 
@@ -513,7 +526,7 @@ article p {
   font-size: 17px;
 }
 
-.snow {
+/* .snow {
   z-index: 2;
 }
 
@@ -583,4 +596,4 @@ article p {
   to {
     transform: translateY(100px);
   }
-}
+} */
