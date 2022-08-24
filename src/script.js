@@ -72,7 +72,6 @@ navbarButton.onclick = async () => {
         menuToggle.restart()
 
         document.body.style.height = `${window.innerHeight}px`
-        document.body.style.overflow = 'hidden'
 
         const menuElement = document.createElement('div')
         const menu = await fetch('pages/navbar/menu.html').then(res => res.clone().text())
@@ -101,7 +100,6 @@ navbarButton.onclick = async () => {
         menuToggle.reverse()
 
         document.body.style.height = 'auto'
-        document.body.style.overflow = 'auto'
 
         gsap.to('nav li button', {
             y: '100%',
@@ -123,16 +121,12 @@ navbarButton.onclick = async () => {
 }
 
 // Points
-let hoverActived = false
-
 const handleShowAnimation = (title, element) => {
     if (!document.getElementById('text-point')) {
         const container = document.createElement('div')
 
         element.onmouseover = () => {
-            if (!pointActived && activeState === 0 && !hoverActived) {
-                hoverActived = true
-
+            if (!pointActived && activeState === 0) {
                 gsap.to('.point', {
                     opacity: 0.25,
                     duration: 0.5
@@ -163,7 +157,7 @@ const handleShowAnimation = (title, element) => {
         }
 
         element.onmouseleave = () => {
-            if (!pointActived && activeState === 0 && hoverActived) {
+            if (!pointActived && activeState === 0) {
                 gsap.to('.point', {
                     opacity: 1,
                     duration: 0.5
@@ -176,7 +170,6 @@ const handleShowAnimation = (title, element) => {
                     ease: 'power2.inOut',
                     onComplete: () => {
                         container.remove()
-                        hoverActived = false
                     }
                 })
             }
@@ -261,7 +254,7 @@ window.addEventListener('resize', () => {
  * Models
  */
 const gltfLoader = new GLTFLoader()
-let model
+let modelMontBlanc, modelBarrier1, modelBarrier2
 
 // const textureLoader = new THREE.TextureLoader()
 // const texture = textureLoader.load('models/mont_blanc_massif_photographed_from_iss/textures/MontBlanc_VandeHei_1M_u0_v0.001_baseColor.jpeg')
@@ -274,24 +267,43 @@ let model
 // texture.minFilter = THREE.NearestFilter
 // texture.magFilter = THREE.NearestFilter
 
+gltfLoader.load('models/barrier/scene.gltf', (gltf) => {
+    const childrens = [...gltf.scene.children]
+
+    console.log(childrens, 'childrens');
+
+    modelBarrier1 = childrens[1]
+    modelBarrier2 = childrens[1].clone()
+
+    modelBarrier1.position.set(-6.000, 4.546, -4.838)
+    modelBarrier1.scale.set(0.050, 0.050, 0.050)
+    modelBarrier1.rotateY(-0.2)
+
+    modelBarrier2.position.set(-5.976, 4.530, -4.750)
+    modelBarrier2.scale.set(0.070, 0.070, 0.070)
+    modelBarrier2.rotateZ(-0.38)
+
+    scene.add(modelBarrier1, modelBarrier2)
+})
+
 gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gltf) => {
     const childrens = [...gltf.scene.children]
 
     for (const children of childrens) {
-        model = children
+        modelMontBlanc = children
 
-        model.castShadow = true
+        modelMontBlanc.castShadow = true
 
-        model.traverse(child => {
+        modelMontBlanc.traverse(child => {
             // child.material = material
         })
 
-        model.scale.set(1, 1, 1)
-        scene.add(model)
+        // modelMontBlanc.scale.set(1, 1, 1)
+        scene.add(modelMontBlanc)
     }
 
     if (document.getElementById('load')) {
-        controls.target.copy(model.position)
+        controls.target.copy(modelMontBlanc.position)
 
         // show website
         gsap.to('#load div.progress-bar', {
@@ -311,15 +323,14 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
                         y: originalPosition.y,
                         z: originalPosition.z,
                         ease: 'back.out(1.4)',
-                        duration: 1,
-                        stagger: 0.1
+                        duration: 1
                     })
                 })
 
-                gsap.fromTo(model.position, {
-                    x: model.position.x,
+                gsap.fromTo(modelMontBlanc.position, {
+                    x: modelMontBlanc.position.x,
                     y: 25,
-                    z: model.position.z
+                    z: modelMontBlanc.position.z
                 }, {
                     x: 0,
                     y: 0,
@@ -327,7 +338,7 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
                     duration: 1,
                     ease: 'back.inOut(2.4)',
                     onUpdate: () => {
-                        model.position.y = model.position.y
+                        modelMontBlanc.position.y = modelMontBlanc.position.y
                     }
                 })
 
@@ -419,13 +430,13 @@ const handleShowMenu = element => {
             camera.updateProjectionMatrix()
         },
         onComplete: () => {
-            if (model) {
+            if (modelMontBlanc) {
                 const currentPosition = controls.position0
 
                 gsap.to(currentPosition, {
-                    x: model.position.x,
-                    y: model.position.y,
-                    z: model.position.z,
+                    x: modelMontBlanc.position.x,
+                    y: modelMontBlanc.position.y,
+                    z: modelMontBlanc.position.z,
                     duration: 0.2,
                     ease: 'ease.out',
                     onUpdate: () => {
@@ -445,6 +456,26 @@ handleShowMenu()
 const clock = new THREE.Clock()
 let previousTime = 0
 
+const handleScrollCanvasOpacity = () => {
+    gsap.to(['canvas', '#more-button', '.point', 'header.article-header'], {
+        opacity: 1 - window.pageYOffset / 550,
+        duration: 0.2,
+        ease: 'ease.out',
+        onUpdate: () => {
+            const canvas = document.querySelector('canvas')
+            const opacity = canvas.style.opacity
+
+            if (opacity < 0) {
+                camera.fov = 50
+                camera.updateProjectionMatrix()
+            } else {
+                camera.fov = 5
+                camera.updateProjectionMatrix()
+            }
+        }
+    })
+}
+
 const tick = async () => {
     stats.begin()
 
@@ -456,7 +487,6 @@ const tick = async () => {
     controls.update()
 
     if (activeState > 0 && !document.getElementById('close-button')) {
-        document.body.style.overflow = 'hidden'
         controls.target.copy(points[activeState - 1].position)
 
         // add close/more button
@@ -524,10 +554,15 @@ const tick = async () => {
                 handleShowMenu(articleContainer)
                 articleContainer.remove()
 
-                gsap.to([closeButton, moreButton], {
+                window.removeEventListener('scroll', () => handleScrollCanvasOpacity())
+
+                const articleHeader = document.querySelector('header.article-header')
+
+                gsap.to([articleHeader, closeButton, moreButton], {
                     opacity: 0,
                     duration: 0.5,
                     onComplete: () => {
+                        articleHeader.remove()
                         closeButton.remove()
                         moreButton.remove()
                     }
@@ -535,15 +570,37 @@ const tick = async () => {
             }
         }
 
-        gsap.fromTo(moreButton, {
+        document.body.append(closeButton, moreButton)
+
+        gsap.fromTo([closeButton, moreButton], {
             opacity: 0
         }, {
             opacity: 1,
+            stagger: 0.2,
             duration: 0.5,
             ease: 'back.in(1.4)'
         })
 
-        document.body.append(closeButton, moreButton)
+        // image parallax effect
+        let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+
+        gsap.utils.toArray("article div#thumbnail img").forEach((element, i) => {
+            gsap.to(element, {
+                y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true,
+                    markers: false,
+                    invalidateOnRefresh: true
+                }
+            })
+        })
+
+        // canvas parallax effect
+        window.addEventListener('scroll', () => handleScrollCanvasOpacity())
     }
 
     switch (activeState) {
@@ -551,29 +608,39 @@ const tick = async () => {
             if (!document.querySelector('article')) {
                 // add text
                 const articleContainer = document.createElement('article')
+                const articleHeader = document.createElement('header')
 
                 const article = await fetch('pages/articles/montblanc.html').then(res => res.clone().text())
+                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
 
                 articleContainer.innerHTML = article
 
-                document.body.appendChild(articleContainer)
+                articleHeader.innerHTML = articleHeaderContent
+                articleHeader.classList.add('article-header')
 
-                // image parallax effect
-                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+                document.body.append(articleHeader, articleContainer)
 
-                gsap.utils.toArray("article div#thumbnail img").forEach((element, i) => {
-                    gsap.to(element, {
-                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: true,
-                            markers: false,
-                            invalidateOnRefresh: true
-                        }
-                    })
+                document.getElementById('article-title').innerHTML = 'Mont-Blanc'
+                document.getElementById('article-subtitle').innerHTML = '4809 m, the highest mountain of Europe 🇪🇺'
+
+                // show header
+                gsap.fromTo(['#article-title', '#article-subtitle'], {
+                    x: '-100%',
+                    opacity: 0
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    ease: 'back.out(0.9)',
+                    duration: 0.5,
+                    stagger: 0.2
+                })
+
+                gsap.fromTo('header.article-header div.shadow', {
+                    opacity: 0
+                }, {
+                    opacity: 1,
+                    ease: 'none',
+                    duration: 0.5
                 })
             }
             break
@@ -595,17 +662,44 @@ const tick = async () => {
             if (!document.querySelector('article')) {
                 // add text
                 const articleContainer = document.createElement('article')
+                const articleHeader = document.createElement('header')
 
-                const article = await fetch('pages/articles/chamonixmontblanc.html').then(res => res.clone().text())
+                const article = await fetch('pages/articles/chamonix.html').then(res => res.clone().text())
+                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
 
                 articleContainer.innerHTML = article
 
-                document.body.appendChild(articleContainer)
+                articleHeader.innerHTML = articleHeaderContent
+                articleHeader.classList.add('article-header')
+
+                document.body.append(articleHeader, articleContainer)
+
+                document.getElementById('article-title').innerHTML = 'Chamonix'
+                document.getElementById('article-subtitle').innerHTML = 'Open the way'
+
+                // show header
+                gsap.fromTo(['#article-title', '#article-subtitle'], {
+                    x: '-100%',
+                    opacity: 0
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    ease: 'back.out(0.9)',
+                    duration: 0.5,
+                    stagger: 0.2
+                })
+
+                gsap.fromTo('header.article-header div.shadow', {
+                    opacity: 0
+                }, {
+                    opacity: 1,
+                    ease: 'none',
+                    duration: 0.5
+                })
             }
             break
 
         case 0:
-            document.body.style.overflowY = 'scroll'
             break
     }
 
@@ -625,6 +719,7 @@ const tick = async () => {
 
             gsap.to('.point', {
                 opacity: 1,
+                stagger: 0.2,
                 duration: 0.5
             })
 

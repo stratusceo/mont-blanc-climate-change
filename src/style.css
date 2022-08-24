@@ -68,8 +68,8 @@ body {
   align-items: center;
   flex-direction: column;
 
+  overflow-x: hidden !important;
   font-family: "Medium";
-  overflow-x: hidden;
 }
 
 canvas {
@@ -269,6 +269,49 @@ div#popup::-webkit-scrollbar {
   width: 0;
 } */
 
+header.article-header {
+  position: absolute;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  flex-direction: column;
+  /* top: 0; */
+
+  width: 100vw;
+  height: 100vh;
+}
+
+header.article-header div.text {
+  color: white;
+  z-index: 3;
+  margin: 50px;
+}
+
+header.article-header h1 {
+  font-family: "Black";
+  font-size: 122px;
+}
+
+header.article-header h2 {
+  font-family: "Bold";
+  font-size: 42px;
+}
+
+header.article-header div.shadow {
+  position: absolute;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  bottom: 0;
+
+  width: 100%;
+  height: 75%;
+}
+
 div#thumbnail {
   position: relative;
   overflow: hidden;
@@ -295,20 +338,14 @@ div#thumbnail div#shadow-image {
 div#thumbnail div#text-content {
   position: absolute;
 
+  transform: translateX(-50%);
+  font-family: "Bold";
   color: white;
+  left: 50%;
   bottom: 0;
 
-  margin: 20px;
-}
-
-div#thumbnail div#text-content h1 {
-  font-family: "Bold";
-  font-weight: bold;
-}
-
-div#thumbnail div#text-content h2 {
-  font-family: "Medium";
-  font-weight: normal;
+  margin: 0 0 20px 0;
+  width: 95%;
 }
 
 /* div#popup h3 {
@@ -429,6 +466,7 @@ button#close-button {
   cursor: pointer;
   border: none;
   right: 50px;
+  z-index: 1;
   top: 50px;
 }
 
@@ -454,6 +492,7 @@ button#more-button {
   justify-content: flex-start;
   align-items: flex-start;
   flex-direction: column;
+  z-index: 1;
 
   background: none;
   cursor: pointer;
@@ -480,8 +519,13 @@ button#more-button img {
 article {
   position: relative;
 
-  padding: 70px 0 0 0;
-  width: 90vw;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+
+  padding: 0 0 100px 0;
+  width: 100vw;
   min-height: 120vh;
 }
 
@@ -496,7 +540,8 @@ article img {
 
 article h1 {
   font-family: "Black";
-  font-size: 38px;
+  font-size: 75px;
+  width: 95%;
 }
 
 article h2 {
@@ -508,6 +553,14 @@ article h3 {
   font-family: "ExtraBold";
   font-size: 52px;
   margin: 20px 0 10px 0;
+  width: 95%;
+}
+
+article h4 {
+  font-family: "Bold";
+  font-size: 42px;
+  margin: 10px 0 5px 0;
+  width: 95%;
 }
 
 article q {
@@ -515,15 +568,29 @@ article q {
 
   font-family: "Regular Italic";
   text-align: center;
-  font-size: 23px;
+  font-size: 40px;
 
   margin: 30px;
+  width: 95%;
 }
 
 article p {
+  font-family: "Regular";
   letter-spacing: 0.5px;
-  font-family: "Light";
-  font-size: 17px;
+  font-size: 20px;
+  width: 95%;
+}
+
+article ul {
+  list-style-type: decimal;
+  width: 88%;
+}
+
+article li {
+  font-family: "Regular Italic";
+  text-align: left;
+  font-size: 25px;
+  width: 100%;
 }
 
 /* .snow {
