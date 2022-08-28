@@ -57,8 +57,6 @@
 * {
   margin: 0;
   padding: 0;
-
-  /* color: #56affc; */
 }
 
 html,
@@ -154,6 +152,7 @@ div#load {
 
   background: white;
   text-align: center;
+  overflow: hidden;
   cursor: default;
   z-index: 999;
   left: 0;
@@ -174,32 +173,6 @@ div#load div.progress-bar {
   height: 3px;
 }
 
-/* div#load > div {
-  position: absolute;
-
-  transform: translate(-50%, -50%);
-  left: 50%;
-  top: 50%;
-}
-
-div#load h1 {
-  font-family: "Black";
-  font-weight: bold;
-  font-size: 400px;
-  line-height: 300px;
-
-  margin: 0 0 20px 0;
-  width: 100%;
-}
-
-div#load h2 {
-  font-family: "Light";
-  font-size: 400px;
-  line-height: 300px;
-
-  width: 100%;
-} */
-
 .wrapper {
   position: absolute;
   transform: translateX(-50%);
@@ -209,6 +182,7 @@ div#load h2 {
   width: 300%;
   height: 50vh;
 }
+
 .wrapper .box {
   position: absolute;
   width: auto;
@@ -221,6 +195,7 @@ div#load h2 {
   line-height: 300px;
   text-align: center;
 }
+
 .wrapper .boxes {
   position: absolute;
 
@@ -235,39 +210,15 @@ div#load h2 {
 }
 
 #no01 {
-  top: 0 !important;
   font-family: "Black";
+  top: 0 !important;
 }
 
 #no02 {
+  font-family: "Light";
   bottom: 0 !important;
   top: auto;
-  font-family: "Light";
 }
-
-/* div#popup {
-  position: absolute;
-
-  transform: translate(0, -50%);
-  font-family: "Regular";
-  scrollbar-width: none;
-  background: white;
-  border-radius: 25px;
-  overflow-y: scroll;
-  line-height: 1.2;
-  font-size: 12px;
-  color: black;
-  z-index: 999;
-  left: 150px;
-  top: 50%;
-
-  width: 550px;
-  height: 675px;
-}
-
-div#popup::-webkit-scrollbar {
-  width: 0;
-} */
 
 header.article-header {
   position: absolute;
@@ -276,7 +227,6 @@ header.article-header {
   justify-content: flex-end;
   align-items: flex-start;
   flex-direction: column;
-  /* top: 0; */
 
   width: 100vw;
   height: 100vh;
@@ -327,7 +277,7 @@ div#thumbnail div#shadow-image {
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0) 0%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgba(0, 0, 0, 0.3) 100%
   );
   top: -1px;
 
@@ -524,12 +474,18 @@ article {
   align-items: center;
   flex-direction: column;
 
-  padding: 0 0 100px 0;
-  width: 100vw;
+  background: whitesmoke;
+  text-align: justify;
+
+  margin: 50px 0 100px 0;
+  padding: 75px 0 120px 0;
+  width: 90vw;
   min-height: 120vh;
 }
 
 article div#thumbnail {
+  margin: 0 0 20px 0;
+  width: 100vw;
   height: 400px;
 }
 
@@ -539,27 +495,27 @@ article img {
 }
 
 article h1 {
+  text-transform: uppercase;
   font-family: "Black";
-  font-size: 75px;
+  font-size: 70px;
   width: 95%;
 }
 
-article h2 {
-  font-family: "Bold";
-  font-size: 25px;
-}
-
 article h3 {
+  text-transform: uppercase;
   font-family: "ExtraBold";
+  color: rgb(7, 30, 0);
   font-size: 52px;
-  margin: 20px 0 10px 0;
+  margin: 40px 0 15px 0;
   width: 95%;
 }
 
 article h4 {
+  text-transform: uppercase;
+  color: rgb(7, 30, 0);
   font-family: "Bold";
   font-size: 42px;
-  margin: 10px 0 5px 0;
+  margin: 20px 0 5px 0;
   width: 95%;
 }
 
@@ -571,96 +527,117 @@ article q {
   font-size: 40px;
 
   margin: 30px;
-  width: 95%;
+  width: 90%;
 }
 
 article p {
   font-family: "Regular";
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   font-size: 20px;
   width: 95%;
 }
 
 article ul {
-  list-style-type: decimal;
+  list-style-type: decimal-leading-zero;
   width: 88%;
 }
 
 article li {
   font-family: "Regular Italic";
-  text-align: left;
+  letter-spacing: 0.8px;
   font-size: 25px;
   width: 100%;
 }
 
-/* .snow {
-  z-index: 2;
-}
-
-.snow,
-.snow:before {
-  position: absolute;
-  transform: translateX(-50%);
-  top: -600px;
-  left: 50%;
-  bottom: 0;
-  right: 0;
-  background-image: radial-gradient(
-      6px 6px at 477px 422px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      5px 5px at 128px 485px,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 255px 584px,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      3px 3px at 85px 134px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(
-      6px 6px at 97px 503px,
-      rgba(255, 255, 255, 0.6) 50%,
-      rgba(0, 0, 0, 0)
-    ),
-    radial-gradient(6px 6px at 291px 317px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(5px 5px at 304px 403px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(3px 3px at 362px 561px, white 50%, rgba(0, 0, 0, 0)),
-    radial-gradient(
-      6px 6px at 570px 510px,
-      rgba(255, 255, 255, 0.8) 50%,
-      rgba(0, 0, 0, 0)
-    );
-  background-size: 600px 600px;
-  animation: snow 5s linear infinite;
-  content: "";
-  overflow: hidden;
-
-  width: 40vw;
-}
-.snow:after {
-  margin-left: -200px;
-  opacity: 0.4;
-  animation-duration: 9s;
-  animation-direction: reverse;
-  filter: blur(1.5px);
-}
-.snow:before {
-  animation-duration: 9s;
-  animation-direction: reverse;
-  margin-left: -300px;
-  opacity: 0.65;
-  filter: blur(1.5px);
-}
-@keyframes snow {
-  to {
-    transform: translateY(100px);
+@media (min-width: 320px) and (max-width: 768px) {
+  button#navbar-button {
+    left: 35px;
+    top: 35px;
   }
-} */
+
+  nav ul {
+    margin: 0 0 0 50px;
+  }
+
+  nav li button {
+    font-size: 47px;
+  }
+
+  button#close-button {
+    right: 20px;
+    top: 20px;
+  }
+
+  button#close-button p {
+    transform: translate(-25px, 5px) rotate(-15deg);
+  }
+
+  button#more-button {
+    bottom: 35px;
+    z-index: 4;
+    right: 20px;
+  }
+
+  button#more-button p {
+    transform: translate(-40px, 0px) rotateZ(-10deg);
+  }
+
+  button#more-button img {
+    width: 52px;
+    height: 52px;
+  }
+
+  header.article-header div.text {
+    margin: 35px;
+  }
+
+  header.article-header h1 {
+    font-size: 47px;
+  }
+
+  header.article-header h2 {
+    font-size: 24px;
+    width: 75%;
+  }
+
+  article div#thumbnail {
+    height: 150px;
+  }
+
+  article h1 {
+    font-size: 29px;
+  }
+
+  article h3 {
+    font-size: 43px;
+    margin: 40px 0 15px 0;
+    width: 80%;
+  }
+
+  article h4 {
+    font-size: 42px;
+    margin: 20px 0 5px 0;
+    width: 80%;
+  }
+
+  article q {
+    font-size: 30px;
+    width: 80%;
+  }
+
+  article p {
+    font-family: "Regular";
+    letter-spacing: 0.8px;
+    font-size: 20px;
+    width: 80%;
+  }
+
+  article ul {
+    width: 60%;
+  }
+
+  article li {
+    letter-spacing: 0.2px;
+    font-size: 22px;
+  }
+}

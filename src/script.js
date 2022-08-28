@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+// import * as dat from 'dat.gui'
 import gsap from 'gsap'
 
 import Stats from 'stats.js'
@@ -12,8 +13,9 @@ const stats = new Stats()
 stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom)
 
-gsap.registerPlugin(ScrollToPlugin)
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollToPlugin, ScrollTrigger)
+
+// const gui = new dat.GUI()
 
 let pointActived = false
 
@@ -68,7 +70,12 @@ menuToggle
     .to('#navbar-button .bot', .2, { rotationZ: -45, transformOrigin: '50% 50%' }, 'rotate')
 
 navbarButton.onclick = async () => {
+    // play audio
+    const audio = new Audio('assets/sounds/click.mp3')
+    audio.play()
+
     if (menuToggle.reversed()) { // show menu
+
         menuToggle.restart()
 
         document.body.style.height = `${window.innerHeight}px`
@@ -80,6 +87,14 @@ navbarButton.onclick = async () => {
         menuElement.id = 'menu'
 
         document.body.appendChild(menuElement)
+
+        document.querySelectorAll('nav button').forEach(element => {
+            element.onclick = () => {
+                // play audio
+                const audio = new Audio('assets/sounds/click.mp3')
+                audio.play()
+            }
+        })
 
         gsap.fromTo('nav', {
             height: 0
@@ -179,7 +194,7 @@ const handleShowAnimation = (title, element) => {
 
 document.querySelectorAll('.point').forEach(element => {
     if (element.classList.contains('point-0')) handleShowAnimation('Mont-Blanc', element)
-    else if (element.classList.contains('point-1')) handleShowAnimation('Incinerator', element)
+    else if (element.classList.contains('point-1')) handleShowAnimation('Mer de Glace', element)
     else if (element.classList.contains('point-2')) handleShowAnimation('Chamonix', element)
 })
 
@@ -194,7 +209,7 @@ const points = [
         index: 0
     },
     {
-        position: new THREE.Vector3(4.393, 0.522, -15.092),
+        position: new THREE.Vector3(3.810, 1.564, -0.035),
         element: document.querySelector('.point-1'),
         index: 1
     },
@@ -212,20 +227,32 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 scene.fog = new THREE.Fog(0xffffff, 0.1, 70)
 
+const cubeTextureLoader = new THREE.CubeTextureLoader()
+
+const environmentMap = cubeTextureLoader.load([
+    'textures/environmentMap/px.jpg',
+    'textures/environmentMap/nx.jpg',
+    'textures/environmentMap/py.jpg',
+    'textures/environmentMap/ny.jpg',
+    'textures/environmentMap/pz.jpg',
+    'textures/environmentMap/nz.jpg'
+])
+
 /**
  * Lights
  */
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.6)
 scene.add(ambientLight)
 
-const light = new THREE.HemisphereLight(0x56affc, 0x56affc, 1);
+const light = new THREE.HemisphereLight(0x56affc, 0x56affc, 1)
 light.position.set(0, 0.4, 0)
 light.intensity = 1
-scene.add(light);
+scene.add(light)
 
-const directionalLight = new THREE.DirectionalLight(new THREE.Color('white'), 0.5)
+const directionalLight = new THREE.DirectionalLight('#ffffff', 2.96)
+directionalLight.shadow.mapSize.set(1024, 1024)
 directionalLight.castShadow = true
-directionalLight.position.y = 15
+directionalLight.position.set(-5, 5, -0.5)
 scene.add(directionalLight)
 
 /**
@@ -248,6 +275,7 @@ window.addEventListener('resize', () => {
     // Update renderer
     renderer.setSize(sizes.width, sizes.height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.physicallyCorrectLights = true
 })
 
 /**
@@ -256,16 +284,17 @@ window.addEventListener('resize', () => {
 const gltfLoader = new GLTFLoader()
 let modelMontBlanc, modelBarrier1, modelBarrier2
 
-// const textureLoader = new THREE.TextureLoader()
-// const texture = textureLoader.load('models/mont_blanc_massif_photographed_from_iss/textures/MontBlanc_VandeHei_1M_u0_v0.001_baseColor.jpeg')
-// const textureRoughness = textureLoader.load('MontBlanc_VandeHei_1M_u0_v0.001_metallicRoughness.png')
-// const material = new THREE.MeshBasicMaterial({ map: texture })
-
-// texture.flipY = false
-// texture.encoding = THREE.sRGBEncoding
-// texture.outputEncoding = THREE.sRGBEncoding
-// texture.minFilter = THREE.NearestFilter
-// texture.magFilter = THREE.NearestFilter
+const updateAllMaterials = () => {
+    scene.traverse(child => {
+        if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
+            child.material.envMap = environmentMap
+            child.material.envMapIntensity = 5
+            child.material.needsUpdate = true
+            child.receiveShadow = true
+            child.castShadow = true
+        }
+    })
+}
 
 gltfLoader.load('models/barrier/scene.gltf', (gltf) => {
     const childrens = [...gltf.scene.children]
@@ -300,6 +329,8 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
 
         // modelMontBlanc.scale.set(1, 1, 1)
         scene.add(modelMontBlanc)
+
+        updateAllMaterials()
     }
 
     if (document.getElementById('load')) {
@@ -372,29 +403,36 @@ let activeState = 0
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(50, sizes.width / sizes.height, 0.1, 1e3)
+const camera = new THREE.PerspectiveCamera(window.innerWidth < 768 ? 75 : 50, sizes.width / sizes.height, 0.1, 1e3)
 scene.add(camera)
 
 /**
  * Renderer
  */
-const renderer = new THREE.WebGLRenderer({ canvas: canvas })
-renderer.shadowMap.enabled = true
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true })
+renderer.toneMapping = THREE.ACESFilmicToneMapping
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.outputEncoding = THREE.sRGBEncoding
+renderer.physicallyCorrectLights = true
+renderer.toneMappingExposure = 1.18
+renderer.shadowMap.enabled = true
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor(0xffffff, 1)
+
+
 
 // Orbit controls
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true
 controls.enableZoom = false
+controls.enablePan = false
 controls.minPolarAngle = Math.PI / 2.25
 controls.maxPolarAngle = Math.PI / 2.25
 controls.minDistance = 50
 controls.maxDistance = 50
 controls.autoRotate = true
-controls.autoRotateSpeed = 1
+controls.autoRotateSpeed = 0.5
 
 const handleShowMenu = element => {
     activeState = 0
@@ -422,7 +460,7 @@ const handleShowMenu = element => {
     })
 
     gsap.to(camera, {
-        fov: 50,
+        fov: window.innerWidth < 768 ? 75 : 50,
         duration: 1,
         ease: 'back.in(0.5)',
         onUpdate: () => {
@@ -458,7 +496,7 @@ let previousTime = 0
 
 const handleScrollCanvasOpacity = () => {
     gsap.to(['canvas', '#more-button', '.point', 'header.article-header'], {
-        opacity: 1 - window.pageYOffset / 550,
+        opacity: 1 - window.pageYOffset / 600,
         duration: 0.2,
         ease: 'ease.out',
         onUpdate: () => {
@@ -466,7 +504,7 @@ const handleScrollCanvasOpacity = () => {
             const opacity = canvas.style.opacity
 
             if (opacity < 0) {
-                camera.fov = 50
+                camera.fov = 500
                 camera.updateProjectionMatrix()
             } else {
                 camera.fov = 5
@@ -475,6 +513,8 @@ const handleScrollCanvasOpacity = () => {
         }
     })
 }
+
+let pointsList = []
 
 const tick = async () => {
     stats.begin()
@@ -486,6 +526,7 @@ const tick = async () => {
 
     controls.update()
 
+    // interact with website
     if (activeState > 0 && !document.getElementById('close-button')) {
         controls.target.copy(points[activeState - 1].position)
 
@@ -514,6 +555,10 @@ const tick = async () => {
         moreButton.onclick = e => {
             e.preventDefault()
             e.stopPropagation()
+
+            // play audio
+            const audio = new Audio('assets/sounds/click.mp3')
+            audio.play()
 
             // scroll to article
             gsap.to(window, {
@@ -548,6 +593,10 @@ const tick = async () => {
             e.preventDefault()
             e.stopPropagation()
 
+            // play audio
+            const audio = new Audio('assets/sounds/click.mp3')
+            audio.play()
+
             const articleContainer = document.querySelector('article')
 
             if (articleContainer) {
@@ -557,6 +606,16 @@ const tick = async () => {
                 window.removeEventListener('scroll', () => handleScrollCanvasOpacity())
 
                 const articleHeader = document.querySelector('header.article-header')
+
+                console.log(pointsList, 'pointsList ');
+
+                pointsList.map(point => point.style.display = 'block')
+
+                gsap.to(pointsList, {
+                    opacity: 1,
+                    duration: 0.3,
+                    onComplete: () => pointsList = []
+                })
 
                 gsap.to([articleHeader, closeButton, moreButton], {
                     opacity: 0,
@@ -579,24 +638,6 @@ const tick = async () => {
             stagger: 0.2,
             duration: 0.5,
             ease: 'back.in(1.4)'
-        })
-
-        // image parallax effect
-        let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
-
-        gsap.utils.toArray("article div#thumbnail img").forEach((element, i) => {
-            gsap.to(element, {
-                y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true,
-                    markers: false,
-                    invalidateOnRefresh: true
-                }
-            })
         })
 
         // canvas parallax effect
@@ -642,6 +683,24 @@ const tick = async () => {
                     ease: 'none',
                     duration: 0.5
                 })
+
+                // image parallax effect
+                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+
+                gsap.utils.toArray('article div#thumbnail img').forEach((element, i) => {
+                    gsap.to(element, {
+                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true,
+                            markers: false,
+                            invalidateOnRefresh: true
+                        }
+                    })
+                })
             }
             break
 
@@ -649,12 +708,38 @@ const tick = async () => {
             if (!document.querySelector('article')) {
                 // add text
                 const articleContainer = document.createElement('article')
+                const articleHeader = document.createElement('header')
 
-                const article = await fetch('pages/articles/incinerator.html').then(res => res.clone().text())
+                const article = await fetch('pages/articles/merdeglace.html').then(res => res.clone().text())
+                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
 
                 articleContainer.innerHTML = article
 
-                document.body.appendChild(articleContainer)
+                articleHeader.innerHTML = articleHeaderContent
+                articleHeader.classList.add('article-header')
+
+                document.body.append(articleHeader, articleContainer)
+
+                document.getElementById('article-title').innerHTML = 'Mer de Glace'
+                document.getElementById('article-subtitle').innerHTML = 'One of the most affected by climate change 🧊'
+
+                // image parallax effect
+                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+
+                gsap.utils.toArray('article div#thumbnail img').forEach((element, i) => {
+                    gsap.to(element, {
+                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true,
+                            markers: false,
+                            invalidateOnRefresh: true
+                        }
+                    })
+                })
             }
             break
 
@@ -675,7 +760,7 @@ const tick = async () => {
                 document.body.append(articleHeader, articleContainer)
 
                 document.getElementById('article-title').innerHTML = 'Chamonix'
-                document.getElementById('article-subtitle').innerHTML = 'Open the way'
+                document.getElementById('article-subtitle').innerHTML = '« Open the way » ⛷'
 
                 // show header
                 gsap.fromTo(['#article-title', '#article-subtitle'], {
@@ -696,6 +781,24 @@ const tick = async () => {
                     ease: 'none',
                     duration: 0.5
                 })
+
+                // image parallax effect
+                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+
+                gsap.utils.toArray("article div#thumbnail img").forEach((element, i) => {
+                    gsap.to(element, {
+                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top bottom",
+                            end: "400px top",
+                            scrub: true,
+                            markers: false,
+                            invalidateOnRefresh: true
+                        }
+                    })
+                })
             }
             break
 
@@ -715,6 +818,10 @@ const tick = async () => {
 
         point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
         point.element.onclick = () => {
+            // play audio
+            const audio = new Audio('assets/sounds/click.mp3')
+            audio.play()
+
             pointActived = true
 
             gsap.to('.point', {
@@ -755,9 +862,18 @@ const tick = async () => {
 
                                     camera.fov = camera.fov
                                     camera.updateProjectionMatrix()
-                                }
-                            }).then(() => {
-                                activeState = point.index + 1
+                                },
+                                onComplete: () => activeState = point.index + 1
+                            })
+
+                            document.querySelectorAll('.point').forEach((element) => {
+                                if (element.classList !== point.element.classList) pointsList.push(element)
+                            })
+
+                            gsap.to(pointsList, {
+                                opacity: 0,
+                                duration: 0.3,
+                                onComplete: () => pointsList.map((point) => point.style.display = 'none')
                             })
                         }
                     })
@@ -766,13 +882,9 @@ const tick = async () => {
         }
     }
 
-    // Update controls
     controls.update(deltaTime)
-
-    // Render
     renderer.render(scene, camera)
 
-    // Call tick again on the next frame
     window.requestAnimationFrame(tick)
 
     stats.end()
