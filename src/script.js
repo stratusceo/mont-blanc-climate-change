@@ -69,13 +69,35 @@ menuToggle
     .to('#navbar-button .top', .2, { rotationZ: 45, transformOrigin: '50% 50%' }, 'rotate')
     .to('#navbar-button .bot', .2, { rotationZ: -45, transformOrigin: '50% 50%' }, 'rotate')
 
-navbarButton.onclick = async () => {
+const handleHideMenu = () => {
+    menuToggle.reverse()
+
+    document.body.style.height = 'auto'
+
+    gsap.to('nav li button', {
+        y: '100%',
+        duration: 0.5,
+        ease: 'power3.out',
+        stagger: 0.1,
+        onComplete: () => {
+            gsap.to('nav', {
+                height: 0,
+                duration: 0.5,
+                ease: 'linear',
+                onComplete: () => {
+                    document.getElementById('menu').remove()
+                }
+            })
+        }
+    })
+}
+
+navbarButton.onmouseup = async () => {
     // play audio
     const audio = new Audio('assets/sounds/click.mp3')
     audio.play()
 
     if (menuToggle.reversed()) { // show menu
-
         menuToggle.restart()
 
         document.body.style.height = `${window.innerHeight}px`
@@ -88,14 +110,42 @@ navbarButton.onclick = async () => {
 
         document.body.appendChild(menuElement)
 
+        // html buttons
         document.querySelectorAll('nav button').forEach(element => {
-            element.onclick = () => {
+            element.onmouseup = () => {
                 // play audio
                 const audio = new Audio('assets/sounds/click.mp3')
                 audio.play()
+
+                switch (element.id) {
+                    case 'home':
+                        handleHideMenu()
+                        break;
+
+                    case 'chamonix-meteo':
+                        window.open('https://chamonix-meteo.com')
+                        break;
+
+                    case 'about-us':
+                        window.open('https://chamonixcrypto.com')
+                        break;
+
+                    case 'contact':
+                        window.open('https://www.linkedin.com/in/corentin-de-maupeou-d-ableiges-de-monbail-600597165')
+                        break;
+
+                    case 'credits':
+                        window.open('https://sketchfab.com/3d-models/mont-blanc-massif-photographed-from-iss-c66a5a559d3844eaac942939211a4b8d')
+                        break;
+
+                    default:
+                        handleHideMenu()
+                        break;
+                }
             }
         })
 
+        // animation
         gsap.fromTo('nav', {
             height: 0
         }, {
@@ -111,28 +161,7 @@ navbarButton.onclick = async () => {
                 });
             }
         })
-    } else { // hide menu
-        menuToggle.reverse()
-
-        document.body.style.height = 'auto'
-
-        gsap.to('nav li button', {
-            y: '100%',
-            duration: 0.5,
-            ease: 'power3.out',
-            stagger: 0.1,
-            onComplete: () => {
-                gsap.to('nav', {
-                    height: 0,
-                    duration: 0.5,
-                    ease: 'linear',
-                    onComplete: () => {
-                        document.getElementById('menu').remove()
-                    }
-                })
-            }
-        })
-    }
+    } else handleHideMenu()
 }
 
 // Points
@@ -250,7 +279,6 @@ light.intensity = 1
 scene.add(light)
 
 const directionalLight = new THREE.DirectionalLight('#ffffff', 2.96)
-directionalLight.shadow.mapSize.set(1024, 1024)
 directionalLight.castShadow = true
 directionalLight.position.set(-5, 5, -0.5)
 scene.add(directionalLight)
@@ -263,20 +291,16 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () => {
-    // Update sizes
-    sizes.width = window.innerWidth
-    sizes.height = window.innerHeight
+// window.addEventListener('resize', () => {
+//     sizes.width = window.innerWidth
+//     sizes.height = window.innerHeight
 
-    // Update camera
-    camera.aspect = sizes.width / sizes.height
-    camera.updateProjectionMatrix()
+//     camera.aspect = sizes.width / sizes.height
+//     camera.updateProjectionMatrix()
 
-    // Update renderer
-    renderer.setSize(sizes.width, sizes.height)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.physicallyCorrectLights = true
-})
+//     renderer.setSize(sizes.width, sizes.height)
+//     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+// })
 
 /**
  * Models
@@ -299,8 +323,6 @@ const updateAllMaterials = () => {
 gltfLoader.load('models/barrier/scene.gltf', (gltf) => {
     const childrens = [...gltf.scene.children]
 
-    console.log(childrens, 'childrens');
-
     modelBarrier1 = childrens[1]
     modelBarrier2 = childrens[1].clone()
 
@@ -315,19 +337,13 @@ gltfLoader.load('models/barrier/scene.gltf', (gltf) => {
     scene.add(modelBarrier1, modelBarrier2)
 })
 
-gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gltf) => {
+gltfLoader.load('models/montblanc/scene.gltf', (gltf) => {
     const childrens = [...gltf.scene.children]
 
     for (const children of childrens) {
         modelMontBlanc = children
-
         modelMontBlanc.castShadow = true
 
-        modelMontBlanc.traverse(child => {
-            // child.material = material
-        })
-
-        // modelMontBlanc.scale.set(1, 1, 1)
         scene.add(modelMontBlanc)
 
         updateAllMaterials()
@@ -353,7 +369,7 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
                         x: originalPosition.x,
                         y: originalPosition.y,
                         z: originalPosition.z,
-                        ease: 'back.out(1.4)',
+                        ease: 'back.out(1.2)',
                         duration: 1
                     })
                 })
@@ -384,8 +400,6 @@ gltfLoader.load('models/mont_blanc_massif_photographed_from_iss/scene.gltf', (gl
         })
     }
 }, e => {
-    console.log(e)
-
     const percent = Math.round((e.loaded / e.total) * 100)
 
     gsap.to('#load div.progress-bar', {
@@ -420,8 +434,6 @@ renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.setClearColor(0xffffff, 1)
 
-
-
 // Orbit controls
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true
@@ -453,7 +465,7 @@ const handleShowMenu = element => {
         y: 2,
         z: -50,
         duration: 1,
-        ease: 'back.in(1.4)',
+        ease: 'back.in(1.2)',
         onUpdate: () => {
             camera.position.set(camera.position.x, camera.position.y, camera.position.z)
         }
@@ -493,6 +505,7 @@ handleShowMenu()
  */
 const clock = new THREE.Clock()
 let previousTime = 0
+let pointsList = []
 
 const handleScrollCanvasOpacity = () => {
     gsap.to(['canvas', '#more-button', '.point', 'header.article-header'], {
@@ -514,7 +527,60 @@ const handleScrollCanvasOpacity = () => {
     })
 }
 
-let pointsList = []
+const handleShowText = async index => {
+    // add text
+    const articleContainer = document.createElement('article')
+    const articleHeader = document.createElement('header')
+
+    const article = await fetch(`pages/articles/${index === 1 ? 'montblanc' : index === 2 ? 'merdeglace' : index === 3 ? 'chamonix' : ''}.html`).then(res => res.clone().text())
+    const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
+
+    articleContainer.innerHTML = article
+
+    articleHeader.innerHTML = articleHeaderContent
+    articleHeader.classList.add('article-header')
+
+    document.body.append(articleHeader, articleContainer)
+
+    document.getElementById('article-title').innerHTML = index === 1 ? 'Mont-Blanc' : index === 2 ? 'Mer de Glace' : index === 3 ? 'Chamonix' : ''
+    document.getElementById('article-subtitle').innerHTML = index === 1 ? '4809 m, the highest mountain of Europe 🇪🇺' : index === 2 ? 'One of the most affected by climate change 🧊' : index === 3 ? '« Open the way » ⛷' : ''
+
+    // show header
+    gsap.fromTo(['#article-title', '#article-subtitle'], {
+        x: '-100%',
+        opacity: 0
+    }, {
+        x: 0,
+        opacity: 1,
+        ease: 'back.out(0.9)',
+        duration: 0.5,
+        stagger: 0.2
+    })
+
+    gsap.fromTo('header.article-header div.shadow', { opacity: 0 }, {
+        opacity: 1,
+        ease: 'none',
+        duration: 0.5
+    })
+
+    // image parallax effect
+    let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
+
+    gsap.utils.toArray('article div#thumbnail img').forEach((element, i) => {
+        gsap.to(element, {
+            y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
+            ease: "none",
+            scrollTrigger: {
+                trigger: element,
+                start: "top bottom",
+                end: "400px top",
+                scrub: true,
+                markers: false,
+                invalidateOnRefresh: true
+            }
+        })
+    })
+}
 
 const tick = async () => {
     stats.begin()
@@ -529,6 +595,8 @@ const tick = async () => {
     // interact with website
     if (activeState > 0 && !document.getElementById('close-button')) {
         controls.target.copy(points[activeState - 1].position)
+
+        handleShowText(activeState)
 
         // add close/more button
         const moreButton = document.createElement('button')
@@ -552,7 +620,7 @@ const tick = async () => {
                 ease: 'back.out(1.4)'
             })
         }
-        moreButton.onclick = e => {
+        moreButton.onmouseup = e => {
             e.preventDefault()
             e.stopPropagation()
 
@@ -579,17 +647,17 @@ const tick = async () => {
             gsap.to('#close-button p', {
                 rotateZ: -15,
                 duration: 0.5,
-                ease: 'back.out(1.4)'
+                ease: 'back.out(1.2)'
             })
         }
         closeButton.onmouseleave = () => {
             gsap.to('#close-button p', {
                 rotateZ: -10,
                 duration: 0.5,
-                ease: 'back.out(1.4)'
+                ease: 'back.out(1.2)'
             })
         }
-        closeButton.onclick = e => {
+        closeButton.onmouseup = e => {
             e.preventDefault()
             e.stopPropagation()
 
@@ -606,8 +674,6 @@ const tick = async () => {
                 window.removeEventListener('scroll', () => handleScrollCanvasOpacity())
 
                 const articleHeader = document.querySelector('header.article-header')
-
-                console.log(pointsList, 'pointsList ');
 
                 pointsList.map(point => point.style.display = 'block')
 
@@ -634,176 +700,14 @@ const tick = async () => {
         gsap.fromTo([closeButton, moreButton], {
             opacity: 0
         }, {
-            opacity: 1,
             stagger: 0.2,
+            opacity: 1,
             duration: 0.5,
-            ease: 'back.in(1.4)'
+            ease: 'back.in(1.2)'
         })
 
         // canvas parallax effect
         window.addEventListener('scroll', () => handleScrollCanvasOpacity())
-    }
-
-    switch (activeState) {
-        case 1:
-            if (!document.querySelector('article')) {
-                // add text
-                const articleContainer = document.createElement('article')
-                const articleHeader = document.createElement('header')
-
-                const article = await fetch('pages/articles/montblanc.html').then(res => res.clone().text())
-                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
-
-                articleContainer.innerHTML = article
-
-                articleHeader.innerHTML = articleHeaderContent
-                articleHeader.classList.add('article-header')
-
-                document.body.append(articleHeader, articleContainer)
-
-                document.getElementById('article-title').innerHTML = 'Mont-Blanc'
-                document.getElementById('article-subtitle').innerHTML = '4809 m, the highest mountain of Europe 🇪🇺'
-
-                // show header
-                gsap.fromTo(['#article-title', '#article-subtitle'], {
-                    x: '-100%',
-                    opacity: 0
-                }, {
-                    x: 0,
-                    opacity: 1,
-                    ease: 'back.out(0.9)',
-                    duration: 0.5,
-                    stagger: 0.2
-                })
-
-                gsap.fromTo('header.article-header div.shadow', {
-                    opacity: 0
-                }, {
-                    opacity: 1,
-                    ease: 'none',
-                    duration: 0.5
-                })
-
-                // image parallax effect
-                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
-
-                gsap.utils.toArray('article div#thumbnail img').forEach((element, i) => {
-                    gsap.to(element, {
-                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: true,
-                            markers: false,
-                            invalidateOnRefresh: true
-                        }
-                    })
-                })
-            }
-            break
-
-        case 2:
-            if (!document.querySelector('article')) {
-                // add text
-                const articleContainer = document.createElement('article')
-                const articleHeader = document.createElement('header')
-
-                const article = await fetch('pages/articles/merdeglace.html').then(res => res.clone().text())
-                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
-
-                articleContainer.innerHTML = article
-
-                articleHeader.innerHTML = articleHeaderContent
-                articleHeader.classList.add('article-header')
-
-                document.body.append(articleHeader, articleContainer)
-
-                document.getElementById('article-title').innerHTML = 'Mer de Glace'
-                document.getElementById('article-subtitle').innerHTML = 'One of the most affected by climate change 🧊'
-
-                // image parallax effect
-                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
-
-                gsap.utils.toArray('article div#thumbnail img').forEach((element, i) => {
-                    gsap.to(element, {
-                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top bottom",
-                            end: "bottom top",
-                            scrub: true,
-                            markers: false,
-                            invalidateOnRefresh: true
-                        }
-                    })
-                })
-            }
-            break
-
-        case 3:
-            if (!document.querySelector('article')) {
-                // add text
-                const articleContainer = document.createElement('article')
-                const articleHeader = document.createElement('header')
-
-                const article = await fetch('pages/articles/chamonix.html').then(res => res.clone().text())
-                const articleHeaderContent = await fetch('pages/articles/header.html').then(res => res.clone().text())
-
-                articleContainer.innerHTML = article
-
-                articleHeader.innerHTML = articleHeaderContent
-                articleHeader.classList.add('article-header')
-
-                document.body.append(articleHeader, articleContainer)
-
-                document.getElementById('article-title').innerHTML = 'Chamonix'
-                document.getElementById('article-subtitle').innerHTML = '« Open the way » ⛷'
-
-                // show header
-                gsap.fromTo(['#article-title', '#article-subtitle'], {
-                    x: '-100%',
-                    opacity: 0
-                }, {
-                    x: 0,
-                    opacity: 1,
-                    ease: 'back.out(0.9)',
-                    duration: 0.5,
-                    stagger: 0.2
-                })
-
-                gsap.fromTo('header.article-header div.shadow', {
-                    opacity: 0
-                }, {
-                    opacity: 1,
-                    ease: 'none',
-                    duration: 0.5
-                })
-
-                // image parallax effect
-                let getRatio = element => window.innerHeight / (window.innerHeight + element.offsetHeight);
-
-                gsap.utils.toArray("article div#thumbnail img").forEach((element, i) => {
-                    gsap.to(element, {
-                        y: () => `${(-window.innerHeight * (1 - getRatio(element))) / 2}px`,
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: element,
-                            start: "top bottom",
-                            end: "400px top",
-                            scrub: true,
-                            markers: false,
-                            invalidateOnRefresh: true
-                        }
-                    })
-                })
-            }
-            break
-
-        case 0:
-            break
     }
 
     /**
@@ -817,7 +721,7 @@ const tick = async () => {
         const translateY = -screenPosition.y * sizes.height * 0.5
 
         point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
-        point.element.onclick = () => {
+        point.element.onmouseup = () => {
             // play audio
             const audio = new Audio('assets/sounds/click.mp3')
             audio.play()
@@ -856,7 +760,7 @@ const tick = async () => {
                             gsap.to(camera, {
                                 fov: 5,
                                 duration: 2,
-                                ease: 'back.in(1.4)',
+                                ease: 'back.in(1.2)',
                                 onUpdate: () => {
                                     controls.target.copy(points[point.index].position)
 
@@ -866,7 +770,7 @@ const tick = async () => {
                                 onComplete: () => activeState = point.index + 1
                             })
 
-                            document.querySelectorAll('.point').forEach((element) => {
+                            document.querySelectorAll('.point').forEach(element => {
                                 if (element.classList !== point.element.classList) pointsList.push(element)
                             })
 
