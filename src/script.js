@@ -7,11 +7,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 // import * as dat from 'dat.gui'
 import gsap from 'gsap'
 
-import Stats from 'stats.js'
+// import Stats from 'stats.js'
 
-const stats = new Stats()
-stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild(stats.dom)
+// const stats = new Stats()
+// stats.showPanel(0) // 0: fps, 1: ms, 2: mb, 3+: custom
+// document.body.appendChild(stats.dom)
 
 gsap.registerPlugin(ScrollToPlugin, ScrollTrigger)
 
@@ -380,7 +380,7 @@ gltfLoader.load('models/montblanc/scene.gltf', (gltf) => {
             duration: 1,
             onComplete: () => {
                 camera.position.set(50, 2, -50)
-                
+
                 // show world
                 points.map(point => {
                     const originalPosition = point.position
@@ -607,7 +607,7 @@ const handleShowText = async index => {
 }
 
 const tick = async () => {
-    stats.begin()
+    // stats.begin()
 
     const elapsedTime = clock.getElapsedTime()
     const deltaTime = elapsedTime - previousTime
@@ -815,7 +815,7 @@ const tick = async () => {
 
     window.requestAnimationFrame(tick)
 
-    stats.end()
+    // stats.end()
 }
 
 tick()
