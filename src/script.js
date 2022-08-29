@@ -69,10 +69,12 @@ menuToggle
     .to('#navbar-button .top', .2, { rotationZ: 45, transformOrigin: '50% 50%' }, 'rotate')
     .to('#navbar-button .bot', .2, { rotationZ: -45, transformOrigin: '50% 50%' }, 'rotate')
 
-const handleHideMenu = () => {
+const handleHideMenu = (isMenuButton) => {
     menuToggle.reverse()
 
     document.body.style.height = 'auto'
+
+    if (isMenuButton) camera.position.set(50, 2, -50)
 
     gsap.to('nav li button', {
         y: '100%',
@@ -119,7 +121,7 @@ navbarButton.onmouseup = async () => {
 
                 switch (element.id) {
                     case 'home':
-                        handleHideMenu()
+                        handleHideMenu(true)
                         break;
 
                     case 'chamonix-meteo':
@@ -168,6 +170,7 @@ navbarButton.onmouseup = async () => {
 const handleShowAnimation = (title, element) => {
     if (!document.getElementById('text-point')) {
         const container = document.createElement('div')
+        const text = document.createElement('p')
 
         element.onmouseover = () => {
             if (!pointActived && activeState === 0) {
@@ -181,9 +184,8 @@ const handleShowAnimation = (title, element) => {
                     duration: 0.5
                 })
 
-                const text = document.createElement('p')
-
                 text.innerHTML = title
+                text.style.opacity = '0%'
 
                 container.id = 'text-point'
                 container.append(text)
@@ -191,11 +193,24 @@ const handleShowAnimation = (title, element) => {
                 document.body.appendChild(container)
 
                 gsap.fromTo(container, {
-                    opacity: 0,
-                }, {
+                    transformOrigin: 'top center',
+                    scaleY: 0,
                     opacity: 1,
-                    duration: 0.5,
-                    ease: 'power2.inOut'
+                }, {
+                    scaleY: 1,
+                    duration: 0.75,
+                    ease: 'power3.out',
+                    onComplete: () => {
+                        gsap.fromTo(text, {
+                            opacity: 0,
+                            y: '50%'
+                        }, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.5,
+                            ease: 'power3.out',
+                        });
+                    }
                 })
             }
         }
@@ -207,13 +222,20 @@ const handleShowAnimation = (title, element) => {
                     duration: 0.5
                 })
 
-                gsap.to(container, {
+                gsap.to(text, {
                     opacity: 0,
-                    curosr: 'grab',
+                    y: '-50%',
                     duration: 0.5,
-                    ease: 'power2.inOut',
+                    ease: 'power3.out',
                     onComplete: () => {
-                        container.remove()
+                        gsap.to(container, {
+                            scaleY: 0,
+                            opacity: 0,
+                            cursor: 'grab',
+                            duration: 0.75,
+                            ease: 'power2.out',
+                            onComplete: () => container.remove()
+                        })
                     }
                 })
             }
@@ -357,6 +379,8 @@ gltfLoader.load('models/montblanc/scene.gltf', (gltf) => {
             opacity: 0,
             duration: 1,
             onComplete: () => {
+                camera.position.set(50, 2, -50)
+                
                 // show world
                 points.map(point => {
                     const originalPosition = point.position
@@ -453,7 +477,7 @@ const handleShowMenu = element => {
         y: -50,
         opacity: 0,
         duration: 0.5,
-        ease: 'back.in(1.4)',
+        ease: 'back.in(1.2)',
         onComplete: () => {
             element.remove()
             pointActived = false

@@ -368,7 +368,7 @@ div#popup p {
 div#text-point {
   position: absolute;
 
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.5);
   z-index: 1;
   left: 0;
   top: 0;
@@ -379,8 +379,10 @@ div#text-point {
 
 div#text-point p {
   position: absolute;
+  display: block;
   transform: translate(-50%, -50%);
   font-family: "ExtraBold Italic";
+  /* text-transform: uppercase; */
   text-align: center;
   line-height: 1.2;
   font-size: 298px;
@@ -609,11 +611,12 @@ article li {
   }
 
   article div#thumbnail {
-    height: 150px;
+    height: 185px;
   }
 
   article h1 {
-    font-size: 29px;
+    font-size: 35px;
+    width: 100%;
   }
 
   article h3 {
