@@ -76,6 +76,12 @@ const handleHideMenu = (isMenuButton) => {
 
     if (isMenuButton) camera.position.set(50, 2, -50)
 
+    gsap.to('canvas', {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'linear'
+    })
+
     gsap.to('nav li button', {
         y: '100%',
         duration: 0.5,
@@ -148,12 +154,19 @@ navbarButton.onmouseup = async () => {
         })
 
         // animation
+        gsap.to('canvas', {
+            opacity: 0,
+            duration: 0.3,
+            ease: 'linear'
+        })
+
         gsap.fromTo('nav', {
+            transformOrigin: 'top center',
             height: 0
         }, {
             height: '100vh',
-            duration: 0.5,
-            ease: 'linear',
+            duration: 0.75,
+            ease: 'power3.out',
             onComplete: () => {
                 gsap.to('nav li button', {
                     y: 0,
@@ -199,7 +212,7 @@ const handleShowAnimation = (title, element) => {
                 }, {
                     scaleY: 1,
                     duration: 0.75,
-                    ease: 'power3.out',
+                    ease: 'linear',
                     onComplete: () => {
                         gsap.fromTo(text, {
                             opacity: 0,
@@ -441,7 +454,7 @@ let activeState = 0
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(window.innerWidth < 768 ? 75 : 50, sizes.width / sizes.height, 0.1, 1e3)
+const camera = new THREE.PerspectiveCamera(window.innerWidth < 768 && window.matchMedia("(orientation: portrait)").matches ? 75 : 50, sizes.width / sizes.height, 0.1, 1e3)
 scene.add(camera)
 
 /**
@@ -561,6 +574,7 @@ const handleShowText = async index => {
 
     articleContainer.innerHTML = article
 
+    articleHeader.style.height = `${window.innerHeight}px`
     articleHeader.innerHTML = articleHeaderContent
     articleHeader.classList.add('article-header')
 

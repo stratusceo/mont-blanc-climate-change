@@ -79,6 +79,7 @@ canvas:active {
 
 .webgl {
   position: relative;
+  display: block;
   top: 0;
   left: 0;
   outline: none;
@@ -116,7 +117,8 @@ nav li {
   margin: 0;
 }
 
-nav li button, nav li a {
+nav li button,
+nav li a {
   display: block;
   transform: translateY(100%);
   text-transform: uppercase;
@@ -128,7 +130,8 @@ nav li button, nav li a {
   border: none;
 }
 
-nav li button:after, nav li a::after {
+nav li button:after,
+nav li a::after {
   display: block;
   transition: transform 250ms ease-in-out;
   border-bottom: solid 5px black;
@@ -137,7 +140,8 @@ nav li button:after, nav li a::after {
   content: "";
 }
 
-nav li button:hover:after, nav li a:hover:after {
+nav li button:hover:after,
+nav li a:hover:after {
   transform: scaleX(1);
 }
 
@@ -228,7 +232,7 @@ header.article-header {
   flex-direction: column;
 
   width: 100vw;
-  height: 100vh;
+  /* height: 100vh; */
 }
 
 header.article-header div.text {
@@ -550,6 +554,36 @@ article li {
   width: 100%;
 }
 
+article footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  margin: 50px 0 0 0;
+  width: 80%;
+}
+
+article footer div.chamonix-crypto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+article footer div.chamonix-crypto img {
+  margin: 0 20px 0 0;
+  width: 64px;
+}
+
+article footer div.chamonix-crypto p {
+  font-family: "ExtraBold";
+  font-size: 28px;
+
+  margin: 0 0 0 20px;
+}
+
 @media screen and (min-width: 320px) and (max-width: 768px) {
   button#navbar-button {
     z-index: 6;
@@ -565,7 +599,8 @@ article li {
     margin: 0 0 0 50px;
   }
 
-  nav li button, nav li a {
+  nav li button,
+  nav li a {
     font-size: 47px;
   }
 
@@ -651,9 +686,32 @@ article li {
     letter-spacing: 0.2px;
     font-size: 22px;
   }
+
+  article footer {
+    width: 70%;
+  }
+
+  article footer div.chamonix-crypto img {
+    margin: 0 10px 0 0;
+    width: 52px;
+  }
+
+  article footer div.chamonix-crypto p {
+    font-size: 17px;
+    margin: 0 0 0 10px;
+  }
 }
 
 @media screen and (min-width: 320px) and (max-width: 1024px) and (orientation: landscape) {
+  nav ul {
+    margin: 0 0 0 120px;
+  }
+
+  nav li button,
+  nav li a {
+    font-size: 44px;
+  }
+
   header.article-header h1 {
     font-size: 37px;
   }
@@ -689,5 +747,9 @@ article li {
   article p,
   article ul {
     width: 70%;
+  }
+
+  article footer {
+    width: 60%;
   }
 }
