@@ -539,6 +539,7 @@ article p {
   font-family: "Regular";
   letter-spacing: 0.8px;
   font-size: 20px;
+  margin: 5px 0;
   width: 80%;
 }
 
@@ -582,6 +583,7 @@ article footer div.chamonix-crypto p {
   font-size: 28px;
 
   margin: 0 0 0 20px;
+  width: 100%;
 }
 
 @media screen and (min-width: 320px) and (max-width: 768px) {
