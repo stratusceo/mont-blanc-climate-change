@@ -187,6 +187,8 @@ const handleShowAnimation = (title, element) => {
 
         element.onmouseover = () => {
             if (!pointActived && activeState === 0) {
+                controls.autoRotate = false
+
                 gsap.to('.point', {
                     opacity: 0.25,
                     duration: 0.5
@@ -230,6 +232,8 @@ const handleShowAnimation = (title, element) => {
 
         element.onmouseleave = () => {
             if (!pointActived && activeState === 0) {
+                controls.autoRotate = true
+
                 gsap.to('.point', {
                     opacity: 1,
                     duration: 0.5
@@ -768,6 +772,8 @@ const tick = async () => {
 
         point.element.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
         point.element.onmouseup = () => {
+            controls.autoRotate = true
+            
             // play audio
             const audio = new Audio('assets/sounds/click.mp3')
             audio.play()
