@@ -427,15 +427,12 @@ button#close-button {
 
 button#close-button p {
   transform: translate(-50px, 0px) rotateZ(-10deg);
-  text-shadow: 0 0 10px black;
-  font-family: "Regular";
+  font-family: auto;
   font-size: 16px;
-  color: white;
+  color: black;
 }
 
 button#close-button img {
-  filter: drop-shadow(0px 0px 10px black);
-
   width: 52px;
   height: 52px;
 }
@@ -457,15 +454,14 @@ button#more-button {
 }
 
 button#more-button p {
-  transform: translate(-50px, 5px) rotateZ(-10deg);
-  text-shadow: 0 0 10px black;
-  font-family: "Regular";
+  transform: translate(-65px, -5px) rotateZ(-10deg);
+  font-family: auto;
   font-size: 16px;
   color: white;
 }
 
 button#more-button img {
-  filter: drop-shadow(0 0 10px black);
+  /* filter: drop-shadow(0 0 10px black); */
 
   width: 64px;
   height: 64px;

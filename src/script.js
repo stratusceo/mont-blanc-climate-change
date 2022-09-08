@@ -481,7 +481,7 @@ controls.maxPolarAngle = Math.PI / 2.25
 controls.minDistance = 50
 controls.maxDistance = 50
 controls.autoRotate = true
-controls.autoRotateSpeed = 0.5
+controls.autoRotateSpeed = 0.3
 
 const handleShowMenu = element => {
     activeState = 0
@@ -581,7 +581,7 @@ const handleShowText = async index => {
     document.body.append(articleHeader, articleContainer)
 
     document.getElementById('article-title').innerHTML = index === 1 ? 'Mont-Blanc' : index === 2 ? 'Mer de Glace' : index === 3 ? 'Chamonix' : ''
-    document.getElementById('article-subtitle').innerHTML = index === 1 ? '4809 m, the highest mountain of Europe 🇪🇺' : index === 2 ? 'One of the most affected by climate change 🧊' : index === 3 ? '« Open the way » ⛷' : ''
+    document.getElementById('article-subtitle').innerHTML = index === 1 ? 'The highest mountain of Europe' : index === 2 ? 'One of the most affected by climate change' : index === 3 ? '« Open the way »' : ''
 
     // show header
     gsap.fromTo(['#article-title', '#article-subtitle'], {
@@ -676,33 +676,7 @@ const tick = async () => {
 
         const closeButton = document.createElement('button')
 
-        closeButton.innerHTML = `
-            <p>Close</p>
-            <img src="assets/icons/cross.png" />
-        `
-        closeButton.id = 'close-button'
-        closeButton.onmouseover = () => {
-            gsap.to('#close-button p', {
-                rotateZ: -15,
-                duration: 0.5,
-                ease: 'back.out(1.2)'
-            })
-        }
-        closeButton.onmouseleave = () => {
-            gsap.to('#close-button p', {
-                rotateZ: -10,
-                duration: 0.5,
-                ease: 'back.out(1.2)'
-            })
-        }
-        closeButton.onmouseup = e => {
-            e.preventDefault()
-            e.stopPropagation()
-
-            // play audio
-            const audio = new Audio('assets/sounds/click.mp3')
-            audio.play()
-
+        const handleCloseActiveState = () => {
             const articleContainer = document.querySelector('article')
 
             if (articleContainer) {
@@ -731,6 +705,40 @@ const tick = async () => {
                     }
                 })
             }
+        }
+
+        window.onkeydown = e => {
+            if (e.code === 'Escape') handleCloseActiveState()
+        }
+
+        closeButton.innerHTML = `
+            <p>Close</p>
+            <img src="assets/icons/cross.webp" />
+        `
+        closeButton.id = 'close-button'
+        closeButton.onmouseover = () => {
+            gsap.to('#close-button p', {
+                rotateZ: -15,
+                duration: 0.5,
+                ease: 'back.out(1.2)'
+            })
+        }
+        closeButton.onmouseleave = () => {
+            gsap.to('#close-button p', {
+                rotateZ: -10,
+                duration: 0.5,
+                ease: 'back.out(1.2)'
+            })
+        }
+        closeButton.onmouseup = e => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            // play audio
+            const audio = new Audio('assets/sounds/click.mp3')
+            audio.play()
+
+            handleCloseActiveState()
         }
 
         document.body.append(closeButton, moreButton)
