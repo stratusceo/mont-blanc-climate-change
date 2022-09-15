@@ -561,20 +561,20 @@ article footer {
   width: 80%;
 }
 
-article footer div.chamonix-crypto {
+article footer div.newspaper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-direction: row;
   flex-wrap: nowrap;
 }
 
-article footer div.chamonix-crypto img {
+article footer div.newspaper img {
   margin: 0 20px 0 0;
   width: 64px;
 }
 
-article footer div.chamonix-crypto p {
+article footer div.newspaper p {
   font-family: "ExtraBold";
   font-size: 28px;
 
@@ -689,12 +689,12 @@ article footer div.chamonix-crypto p {
     width: 70%;
   }
 
-  article footer div.chamonix-crypto img {
+  article footer div.newspaper img {
     margin: 0 10px 0 0;
     width: 52px;
   }
 
-  article footer div.chamonix-crypto p {
+  article footer div.newspaper p {
     font-size: 17px;
     margin: 0 0 0 10px;
   }
